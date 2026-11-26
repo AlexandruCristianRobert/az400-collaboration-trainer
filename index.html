@@ -1,0 +1,1857 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collaboration &amp; Communication Practice Lab</title>
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --text:#1d2330; --muted:#5d6678; --line:#e1e5ec;
+  --accent:#0f6cbd; --accent-soft:#e6f0fa; --ok:#127a3c; --ok-soft:#e5f5eb; --bad:#b42318; --bad-soft:#fdecea;
+  --warn:#a35200; --warn-soft:#fdf1e3;
+  --code-bg:#0f1720; --code-text:#d6dde8;
+  --k:#7cc4ff; --s:#f2b880; --c:#7d8a9c; --d:#d7a6ff; --n:#9fe3a8; --t:#6fd6c9;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1116; --panel:#161b22; --text:#e3e8ef; --muted:#9aa4b2; --line:#2a313c;
+    --accent:#4ea1f3; --accent-soft:#16283c; --ok:#4cc27a; --ok-soft:#13281c; --bad:#ff7b72; --bad-soft:#2d1615;
+    --warn:#f0b450; --warn-soft:#2b2112;
+    --code-bg:#0a0d12;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1116; --panel:#161b22; --text:#e3e8ef; --muted:#9aa4b2; --line:#2a313c;
+  --accent:#4ea1f3; --accent-soft:#16283c; --ok:#4cc27a; --ok-soft:#13281c; --bad:#ff7b72; --bad-soft:#2d1615;
+  --warn:#f0b450; --warn-soft:#2b2112;
+  --code-bg:#0a0d12;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+code,pre,textarea,input.answer{font-family:"Cascadia Code",Consolas,"SF Mono",Menlo,monospace}
+.app{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:100vh}
+aside{background:var(--panel);border-right:1px solid var(--line);padding:20px 14px;position:sticky;top:0;height:100vh;overflow:auto}
+aside h1{font-size:18px;margin:0 8px 4px}
+aside .sub{color:var(--muted);font-size:13px;margin:0 8px 14px}
+.progress{height:6px;background:var(--line);border-radius:4px;margin:0 8px 6px;overflow:hidden}
+.progress>div{height:100%;background:var(--ok);width:0;transition:width .3s}
+.progtext{font-size:12px;color:var(--muted);margin:0 8px 14px}
+nav button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:0;background:none;color:var(--text);
+  padding:8px 10px;border-radius:8px;cursor:pointer;font-size:14px}
+nav button:hover{background:var(--accent-soft)}
+nav button.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav .num{flex:0 0 24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:12px;color:var(--muted)}
+nav .cnt{margin-left:auto;font-size:11px;color:var(--muted);font-weight:400}
+nav button.done .num{background:var(--ok);border-color:var(--ok);color:#fff}
+nav .group{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 10px 4px}
+.sidefoot{margin:18px 8px 0;display:grid;gap:10px;justify-items:start}
+.sidefoot a{font-size:13px;color:var(--accent)}
+.theme{font-size:13px;background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 10px;cursor:pointer}
+main{padding:32px 40px 80px;max-width:980px;width:100%}
+.tag{display:inline-block;font-size:12px;color:var(--accent);background:var(--accent-soft);padding:2px 10px;border-radius:20px;margin-bottom:8px}
+h2{font-size:28px;margin:0 0 8px}
+h3{font-size:19px;margin:28px 0 8px}
+p{margin:8px 0}
+.lead{color:var(--muted);font-size:17px}
+:not(pre)>code{background:var(--accent-soft);padding:1px 6px;border-radius:5px;font-size:.9em;overflow-wrap:anywhere}
+.codewrap{position:relative;margin:12px 0}
+pre{background:var(--code-bg);color:var(--code-text);padding:16px 18px;border-radius:10px;overflow:auto;font-size:14px;line-height:1.55;margin:0}
+.file{font-size:12px;color:var(--muted);margin:12px 0 -6px;font-family:Consolas,monospace}
+.copy{position:absolute;top:8px;right:8px;font-size:12px;background:#ffffff1a;color:#cfd8e3;border:0;border-radius:6px;padding:4px 9px;cursor:pointer}
+.copy:hover{background:#ffffff33}
+.tk{color:var(--k)} .ts{color:var(--s)} .tc{color:var(--c);font-style:italic} .td{color:var(--d)} .tn{color:var(--n)} .tt{color:var(--t)}
+.tdash{color:var(--c)}
+ul.tips,ol.tips{padding-left:20px} .tips li{margin:4px 0}
+table.ref{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0;display:block;overflow-x:auto}
+table.ref th,table.ref td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+table.ref th{background:var(--accent-soft);font-weight:600}
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0;font-size:15px}
+.note.exam{border-left-color:var(--warn);background:var(--warn-soft)}
+.exercise{margin-top:28px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+.exercise h3{margin-top:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.exercise h3 .badge{font-size:12px;background:var(--ok);color:#fff;border-radius:20px;padding:2px 10px;display:none}
+.exercise.solved h3 .badge{display:inline-block}
+.kind{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:-4px 0 8px}
+.exhead{margin-top:36px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+textarea{width:100%;min-height:220px;background:var(--code-bg);color:var(--code-text);border:1px solid var(--line);border-radius:10px;
+  padding:14px;font-size:14px;line-height:1.55;resize:vertical;tab-size:2;outline:none;white-space:pre;overflow:auto;margin-top:10px}
+textarea:focus,input.answer:focus{border-color:var(--accent)}
+input.answer{width:100%;background:var(--code-bg);color:var(--code-text);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:15px;outline:none;margin-top:10px}
+.edhelp{font-size:12px;color:var(--muted);margin:4px 0 0}
+.opts{display:grid;gap:8px;margin:12px 0}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;background:var(--bg)}
+.opt:hover{border-color:var(--accent)}
+.opt input{margin-top:5px;flex:0 0 auto}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.results{list-style:none;padding:0;margin:10px 0}
+.results li{padding:6px 12px;border-radius:7px;margin:4px 0;font-size:14px}
+.results li.pass{background:var(--ok-soft);color:var(--ok)}
+.results li.fail{background:var(--bad-soft);color:var(--bad)}
+.results li .sub{display:block;font-size:13px;margin:2px 0 0 18px;opacity:.9}
+.hint{display:none;background:var(--accent-soft);padding:10px 14px;border-radius:8px;font-size:15px;margin:8px 0}
+.why{display:none;border-left:3px solid var(--ok);background:var(--ok-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:15px}
+.solution{display:none}
+.navfoot{display:flex;justify-content:space-between;margin-top:30px}
+.menu{display:none}
+@media (max-width:820px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  aside{position:fixed;inset:0 30% 0 0;z-index:5;transform:translateX(-105%);transition:transform .2s;height:100vh}
+  aside.open{transform:none;box-shadow:0 0 40px #0006}
+  main{padding:16px 16px 60px}
+  .menu{display:inline-block;margin-bottom:12px}
+  h2{font-size:23px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside id="side">
+    <h1>Collaboration Lab</h1>
+    <p class="sub">AZ-400 · 1.3 Collaboration &amp; communication</p>
+    <div class="progress"><div id="bar"></div></div>
+    <p class="progtext" id="progtext"></p>
+    <nav id="nav"></nav>
+    <div class="sidefoot">
+      <button class="theme" id="themeBtn">Toggle theme</button>
+      <a href="../azure-pipelines-tutorial/index.html">Open the Azure Pipelines Lab</a>
+      <a href="../bicep-tutorial/index.html">Open the Bicep Practice Lab</a>
+    </div>
+  </aside>
+  <main>
+    <button class="btn menu" id="menuBtn">☰ Modules</button>
+    <div id="content"></div>
+  </main>
+</div>
+
+<script>
+/* ===================================================================
+   MODULE DATA
+   - Each module has a short explanation (sections) and several exercises.
+   - Exercise kinds:
+       mcq    one correct option       { options, answer: index }
+       multi  select all that apply    { options, answer: [indexes] }
+       text   one-line answer          { accept: [RegExp], solution }
+       code   editor with checks       { lang, starter, checks: [{l, t: x => bool}], solution }
+     For code checks, x = { src (comments removed), raw, lines (trimmed, non-empty), y (YAML api, yaml only) }.
+     Text answers are trimmed and runs of whitespace collapsed before matching.
+   - Optional alts / bad arrays hold extra answers the self-test expects
+     to be accepted / rejected.
+   - ${{ ... }} and shell ${VAR} are written as \${...} inside template literals.
+     Markdown code fences use ${FENCE}.
+   =================================================================== */
+const FENCE = "```";
+const MODULES = [
+/* ================================================================ 1 */
+{
+  group:"Document",
+  title:"Azure DevOps wikis",
+  tag:"Provisioned wiki · code wiki · permissions",
+  intro:`Azure DevOps has two kinds of wiki. Both store pages as Markdown files in a <b>Git repository</b>, but they're created, edited, ordered and versioned differently. The exam likes to ask which one fits a scenario.`,
+  sections:[
+    {h:"Provisioned wiki vs. publish code as wiki", p:`You create the <b>project wiki</b> from <b>Overview → Wiki → Create project wiki</b>. You create a <b>code wiki</b> from <b>Wiki → Publish code as wiki</b> and point it at a folder and branch in an Azure Repos Git repo.`,
+     after:`<table class="ref">
+      <tr><th></th><th>Provisioned (project) wiki</th><th>Published code wiki</th></tr>
+      <tr><td>How many</td><td>One per project</td><td>As many as you like, each with its own name</td></tr>
+      <tr><td>Where the files live</td><td>A Git repo created for the wiki, <code>&lt;Project&gt;.wiki</code>, branch <code>wikiMaster</code></td><td>A folder in an existing Azure Repos Git repo, on a branch you choose</td></tr>
+      <tr><td>Editing</td><td>In the wiki editor; each save commits to <code>wikiMaster</code>. You can also clone the wiki repo.</td><td>In the wiki (<b>Edit in Repos</b>) or with a normal Git workflow: branch, pull request, branch policies. Changes to the published branch publish automatically.</td></tr>
+      <tr><td>Page order</td><td>Managed for you when you drag pages in the tree</td><td>You maintain <code>.order</code> files by hand. Without one, pages sort alphabetically.</td></tr>
+      <tr><td>Versions</td><td>Page revisions, with a <b>Revert</b> option on the wiki page</td><td>Publish extra branches (for example <code>release/2.0</code>) as <b>versions</b> that readers switch between. Revert via Git or a pull request.</td></tr>
+      <tr><td>Unpublish / delete</td><td>No REST delete for the wiki itself. You delete its Git repository.</td><td><b>Unpublish</b> removes the wiki and leaves the files in the repo. Only the user who published it can version or unpublish it.</td></tr>
+     </table>`},
+    {h:"The files behind the pages", lang:"text", code:`/                         wiki root (or the mapped folder of a code wiki)
+├─ .order                 page order at this level, one page name per line
+├─ .attachments/          images and files pasted into pages
+├─ Home.md
+├─ Getting-Started.md     page "Getting Started": spaces in titles become hyphens
+└─ Getting-Started/       subpages live in a folder with the same name
+   ├─ .order
+   └─ Install-Tools.md`,
+     p:`Because a hyphen in a file name means a space, a real hyphen in a page title is encoded as <code>%2D</code> in the file name. A <code>.order</code> file lists the page file names <b>without</b> the <code>.md</code> extension.`},
+    {h:"Wiki-only Markdown extras", lang:"md", code:`[[_TOC_]]              table of contents (case-sensitive; first instance only)
+[[_TOSP_]]             table of subpages ("Child Pages")
+#1234                  link to work item 1234
+@<{identity-guid}>     an @mention as stored in the file (type @ in the editor to pick someone)
+
+::: mermaid
+graph LR
+  A --> B
+:::
+
+:::
+query-table 6ff7777e-8ca5-4f04-a7f6-9e63737dddf7
+:::`,
+     p:`You can also use HTML such as <code>&lt;details&gt;&lt;summary&gt;</code> for collapsible sections, and <code>::: video</code> to embed YouTube or Microsoft Stream videos. Markdown in Azure DevOps doesn't run JavaScript and doesn't allow general iframes.`},
+    {h:"Permissions and automation", p:`Wiki permissions are Git repository permissions. Open <b>More options (…) → Wiki security</b> to set them per group. By default <b>Contributors</b> can edit and <b>Readers</b> can only read. Publishing code as a wiki needs the <b>Create repository</b> permission, which Project Administrators have by default. You can script wikis with the Azure DevOps CLI extension:`,
+     lang:"sh", code:`az devops configure --defaults organization=https://dev.azure.com/contoso project=Fabrikam
+
+az devops wiki create --name "Fabrikam.wiki" --type projectwiki
+az devops wiki create --name "Shop API docs" --type codewiki \\
+  --repository shop-api --mapped-path /docs --version main
+
+az devops wiki page create --wiki "Shop API docs" --path "Release notes" --file-path notes.md
+az devops wiki list`}
+  ],
+  tip:`Look for clues in the wording. <i>"Docs next to the code"</i>, <i>"reviewed in pull requests"</i>, <i>"a version per release"</i> or <i>"several wikis"</i> point to <b>publish code as wiki</b>. <i>"A quick team knowledge base edited in the browser"</i> points to the <b>provisioned</b> project wiki.`,
+  exercises:[
+    {id:"wiki-choose", kind:"mcq", title:"Pick the right wiki",
+     task:`Your team keeps product docs in the <code>docs/</code> folder of the <code>shop-api</code> repo. Doc changes must go through pull requests with the same branch policies as code, and readers must be able to switch between the docs for release 1.0 and release 2.0. What do you configure?`,
+     options:[
+       `Create the project wiki and copy the <code>docs/</code> folder into it before every release`,
+       `Create two provisioned wikis, one per release`,
+       `Publish <code>docs/</code> as a code wiki from <code>main</code>, then publish <code>release/1.0</code> and <code>release/2.0</code> as additional versions`,
+       `Publish the docs as a Universal Package in Azure Artifacts`],
+     answer:2,
+     hint:`Which wiki type is just a view over a folder in a normal repo, with branch policies and versions?`,
+     explain:`A <b>code wiki</b> is a view over a folder in a normal repo, so edits follow the usual branch → pull request → policy flow. Its <b>versions</b> feature publishes other branches so readers can switch between them. A project can only have <b>one</b> provisioned wiki, and that wiki has no versions.`},
+    {id:"wiki-facts", kind:"mcq", title:"Provisioned wiki facts",
+     task:`Which statement about the provisioned (project) wiki is true?`,
+     options:[
+       `You can create as many project wikis as you need in one project`,
+       `Its pages are stored in a Git repo named <code>&lt;Project&gt;.wiki</code>, on the branch <code>wikiMaster</code>`,
+       `You must maintain <code>.order</code> files by hand to sort the pages`,
+       `You can publish other branches of it as versions`],
+     answer:1,
+     hint:`Three of the four options describe the code wiki.`,
+     explain:`The project wiki is backed by its own Git repo (<code>&lt;Project&gt;.wiki</code>, branch <code>wikiMaster</code>). You can clone it and work offline. Manual <code>.order</code> files, versions and multiple wikis are all features of the <b>published code wiki</b>.`},
+    {id:"wiki-cli", kind:"code", lang:"sh", title:"Publish a code wiki from the CLI",
+     task:`Write one Azure DevOps CLI command that publishes the <code>/docs</code> folder of the repo <code>shop-api</code>, branch <code>main</code>, as a code wiki named <code>Shop API docs</code>. Assume the organization and project defaults are already configured.`,
+     starter:`# az devops ...
+`,
+     checks:[
+       {l:"Uses az devops wiki create", t:x => /az\s+devops\s+wiki\s+create\b/.test(x.src)},
+       {l:"Type is codewiki", t:x => /--type\s+["']?codewiki["']?(\s|$)/i.test(x.src)},
+       {l:"Repository is shop-api", t:x => /(--repository|-r)\s+["']?shop-api["']?(\s|$)/.test(x.src)},
+       {l:"Mapped path is /docs", t:x => /--mapped-path\s+["']?\/?docs\/?["']?(\s|$)/.test(x.src)},
+       {l:"Version (branch) is main", t:x => /(--version|-v)\s+["']?main["']?(\s|$)/.test(x.src)},
+       {l:"Name is \"Shop API docs\"", t:x => /--name\s+(["'])Shop API docs\1/.test(x.src)}
+     ],
+     hint:`<code>az devops wiki create --name ... --type codewiki --repository ... --mapped-path ... --version ...</code>. Quote the name because it contains spaces.`,
+     solution:`az devops wiki create --name "Shop API docs" --type codewiki \\
+  --repository shop-api --mapped-path /docs --version main`,
+     alts:[`az devops wiki create -r shop-api --type codewiki --version main --mapped-path "/docs" --name 'Shop API docs'`],
+     explain:`For a code wiki, <code>--repository</code>, <code>--mapped-path</code> and <code>--version</code> (the branch) are required. For <code>--type projectwiki</code> you only give a name. Publishing extra branches as versions happens later, from the wiki UI or the REST API.`},
+    {id:"wiki-order", kind:"code", lang:"text", title:"Order the pages of a code wiki",
+     task:`Your code wiki root has <code>Architecture-Overview.md</code>, <code>Getting-Started.md</code>, <code>Home.md</code> and <code>Release-Notes.md</code>. They show up alphabetically. Write the root <code>.order</code> file so the navigation shows <b>Home, Getting Started, Architecture Overview, Release Notes</b>.`,
+     starter:``,
+     checks:[
+       {l:"Exactly four entries", t:x => x.lines.length === 4},
+       {l:"No .md extensions", t:x => x.lines.length > 0 && x.lines.every(l => !/\.md$/i.test(l))},
+       {l:"Spaces written as hyphens (file names, not titles)", t:x => x.lines.length > 0 && x.lines.every(l => !/\s/.test(l))},
+       {l:"Correct order: Home, Getting-Started, Architecture-Overview, Release-Notes", t:x => x.lines.join("|").replace(/\.md/gi, "") === "Home|Getting-Started|Architecture-Overview|Release-Notes"}
+     ],
+     hint:`One page per line, using the file name without <code>.md</code>.`,
+     solution:`Home
+Getting-Started
+Architecture-Overview
+Release-Notes`,
+     bad:[`Home\nGetting Started\nArchitecture Overview\nRelease Notes`],
+     explain:`The <code>.order</code> file contains file names, one per line, without the <code>.md</code> extension. Pages it doesn't list appear after the listed ones, sorted alphabetically. In the provisioned wiki these files are kept up to date for you when you drag pages around.`},
+    {id:"wiki-toc", kind:"text", title:"Table of contents tag",
+     task:`Which tag do you put on an Azure DevOps wiki page to render a table of contents built from its headings? Type it exactly.`,
+     placeholder:"[[...]]",
+     accept:[/^\[\[_TOC_\]\]$/],
+     solution:`[[_TOC_]]`,
+     bad:[`[[_toc_]]`, `[TOC]`],
+     hint:`Double square brackets, underscores, capital letters.`,
+     explain:`<code>[[_TOC_]]</code> is case-sensitive. The lowercase <code>[[_toc_]]</code> might not render. Only the first instance on a page is used, and only <code>#</code>-style Markdown headings are picked up. Its sibling <code>[[_TOSP_]]</code> renders a table of subpages.`}
+  ]
+},
+/* ================================================================ 2 */
+{
+  group:"Document",
+  title:"Markdown",
+  tag:"Tables · task lists · anchors · mentions",
+  intro:`READMEs, pull request descriptions, wikis and GitHub issues all use Markdown. The core syntax is the same everywhere. Each platform adds its own extras for mentions, work item links and callouts.`,
+  sections:[
+    {h:"Tables and alignment", lang:"md", code:`| Environment | URL                      | Approver |
+|:------------|:------------------------:|---------:|
+| Test        | https://test.contoso.com | Ops      |
+| Production  | https://www.contoso.com  | CAB      |`,
+     p:`The <b>separator row</b> under the header is required. Without it you get plain text. Colons set the alignment: <code>:---</code> left, <code>:---:</code> centre, <code>---:</code> right. The cells don't have to line up, and the outer pipes are optional.`},
+    {h:"Task lists, mentions and references", after:`<table class="ref">
+      <tr><th></th><th>GitHub</th><th>Azure DevOps</th></tr>
+      <tr><td>Task list</td><td><code>- [ ] todo</code> · <code>- [x] done</code></td><td>Same syntax, supported in pull requests and wikis</td></tr>
+      <tr><td>Mention a person or team</td><td><code>@octocat</code>, <code>@org/team</code></td><td>Type <code>@</code> and pick someone. Wiki files store it as <code>@&lt;{identity-guid}&gt;</code>.</td></tr>
+      <tr><td>Issue / work item</td><td><code>#42</code> = issue or PR in the repo · <code>AB#42</code> = Azure Boards work item (needs the Azure Boards app)</td><td><code>#42</code> = work item 42</td></tr>
+      <tr><td>Pull request</td><td><code>#42</code></td><td><code>!42</code></td></tr>
+      <tr><td>Heading link</td><td><code>[Setup](#setup)</code>, or <code>[Setup](docs/setup.md#install)</code> for another file</td><td>Same idea</td></tr>
+     </table>`},
+    {h:"Heading anchors", p:`Every heading gets an anchor ID. <b>GitHub</b> lowercases the text, removes punctuation (except <code>-</code> and <code>_</code>) and turns spaces into hyphens. Duplicate headings get <code>-1</code>, <code>-2</code>… <b>Azure DevOps</b> also lowercases and hyphenates, but it turns most punctuation into hyphens instead of removing it. For example, <code>#### Team #1 : Release Wiki!</code> becomes <code>#team-1--release-wiki</code>. When in doubt, check the rendered HTML.`,
+     lang:"md", code:`## Deploy to production
+...
+See [how we deploy](#deploy-to-production).`},
+    {h:"GitHub alerts and collapsible sections", lang:"md", code:`> [!NOTE]
+> Useful information users should know.
+
+> [!WARNING]
+> Urgent info that needs immediate attention.
+
+<details>
+<summary>Show the full log</summary>
+
+Markdown works in here **after a blank line**.
+
+</details>`,
+     p:`GitHub alerts come in five types: <code>NOTE</code>, <code>TIP</code>, <code>IMPORTANT</code>, <code>WARNING</code> and <code>CAUTION</code>. <code>&lt;details&gt;</code> also works in Azure DevOps wikis, which require a blank line after <code>&lt;/summary&gt;</code>.`}
+  ],
+  tip:`Know which reference syntax works where. In GitHub text, <code>#123</code> is a GitHub issue or PR and <code>AB#123</code> is an Azure Boards work item. In Azure DevOps text, <code>#123</code> is a work item and <code>!123</code> is a pull request.`,
+  exercises:[
+    {id:"md-table", kind:"code", lang:"md", title:"Build an aligned table",
+     task:`Write a Markdown table with the columns <code>Service</code>, <code>Owner</code> and <code>SLA</code>. Left-align <b>Service</b>, centre <b>Owner</b> and right-align <b>SLA</b>. Add at least two data rows.`,
+     starter:``,
+     checks:[
+       {l:"Header row: Service | Owner | SLA", t:x => /^\|?\s*Service\s*\|\s*Owner\s*\|\s*SLA\s*\|?\s*$/mi.test(x.src)},
+       {l:"Separator row directly under the header", t:x => /^\|?\s*Service\s*\|\s*Owner\s*\|\s*SLA\s*\|?[ \t]*\n\|?\s*:?-+:?\s*\|\s*:?-+:?\s*\|\s*:?-+:?\s*\|?[ \t]*$/mi.test(x.src)},
+       {l:"Alignment: left, centre, right", t:x => /^\|?\s*:-+\s*\|\s*:-+:\s*\|\s*-+:\s*\|?[ \t]*$/m.test(x.src)},
+       {l:"At least two data rows with three cells", t:x => {
+          const rows = x.lines.filter(l => !/^\|?\s*:?-+:?\s*\|/.test(l) && !/Service\s*\|\s*Owner/i.test(l))
+            .filter(l => l.replace(/^\||\|$/g, "").split("|").length === 3);
+          return rows.length >= 2; }}
+     ],
+     hint:`Left <code>:---</code>, centre <code>:---:</code>, right <code>---:</code>. The separator row goes directly under the header.`,
+     solution:`| Service  | Owner     |   SLA |
+|:---------|:---------:|------:|
+| Checkout | Team Pay  | 99.95 |
+| Search   | Team Find |  99.9 |`,
+     alts:[`Service|Owner|SLA\n:--|:-:|--:\nA|B|1\nC|D|2`],
+     explain:`GitHub, Azure DevOps wikis, READMEs and PR descriptions all render this the same way. Without the separator row it's just text with pipes. Right-aligning numeric columns such as an SLA makes them easier to scan.`},
+    {id:"md-fix", kind:"code", lang:"md", title:"Fix the broken README section",
+     task:`This snippet renders badly. Fix it so that: the heading renders, the table renders, all three checklist items are real task-list items (keep "Request access" checked), and the FAQ link points at the <code>#faq</code> anchor.`,
+     starter:`##Setup steps
+| Step | Owner |
+| Install tools | Dev |
+| Configure pipeline | Ops |
+
+-[] Create service connection
+- [X] Request access
+* [ ]Add branch policy
+
+See [the FAQ] (#faq).
+`,
+     checks:[
+       {l:"Heading has a space after ##", t:x => /^##\s+Setup steps\s*$/m.test(x.src)},
+       {l:"Table has a separator row under the header", t:x => /^\|?\s*Step\s*\|\s*Owner\s*\|?[ \t]*\n\|?\s*:?-+:?\s*\|\s*:?-+:?\s*\|?[ \t]*$/m.test(x.src)},
+       {l:"Unchecked task: Create service connection", t:x => /^\s*[-*+] \[ \] Create service connection/m.test(x.src)},
+       {l:"Checked task: Request access", t:x => /^\s*[-*+] \[[xX]\] Request access/m.test(x.src)},
+       {l:"Unchecked task: Add branch policy", t:x => /^\s*[-*+] \[ \] Add branch policy/m.test(x.src)},
+       {l:"Link written as [the FAQ](#faq) with no space", t:x => /\[the FAQ\]\(#faq\)/.test(x.src)}
+     ],
+     hint:`Headings need a space after the hashes. Task items are <code>- [ ] text</code>: a space inside the brackets and a space after them. A link has no space between <code>]</code> and <code>(</code>.`,
+     solution:`## Setup steps
+| Step | Owner |
+|------|-------|
+| Install tools | Dev |
+| Configure pipeline | Ops |
+
+- [ ] Create service connection
+- [x] Request access
+- [ ] Add branch policy
+
+See [the FAQ](#faq).`,
+     explain:`These four mistakes come up all the time in PR reviews. <code>##Setup</code> isn't a heading in CommonMark. A table needs its separator row. <code>-[]</code> and <code>[ ]Add</code> aren't task items. <code>[text] (url)</code> isn't a link. Uppercase <code>[X]</code> is fine.`},
+    {id:"md-anchor", kind:"text", title:"Link to a heading on GitHub",
+     task:`A README on GitHub has the heading <code>## Deploy to Azure: Step 2!</code>. What anchor do you link to? (You can type just the anchor, such as <code>#something</code>.)`,
+     placeholder:"#...",
+     accept:[/^(\[[^\]]*\]\()?#?deploy-to-azure-step-2\)?$/],
+     solution:`#deploy-to-azure-step-2`,
+     alts:[`[Step 2](#deploy-to-azure-step-2)`, `deploy-to-azure-step-2`],
+     bad:[`#Deploy-to-Azure:-Step-2!`, `#deploy-to-azure--step-2-`],
+     hint:`Lowercase, drop the punctuation, spaces become hyphens.`,
+     explain:`GitHub lowercases the text, drops <code>:</code> and <code>!</code> and replaces spaces with hyphens, giving <code>#deploy-to-azure-step-2</code>. Azure DevOps turns punctuation into hyphens instead of removing it, so the same heading gets a different ID there.`},
+    {id:"md-refs", kind:"mcq", title:"References in a GitHub pull request",
+     task:`You're writing a pull request description in a GitHub repo that is connected to Azure Boards. You want to link GitHub issue 17 and Azure Boards work item 42, and notify the <code>docs</code> team of the <code>contoso</code> organization. What do you write?`,
+     options:[
+       `<code>#17 #42 @docs</code>`,
+       `<code>#17 AB#42 @contoso/docs</code>`,
+       `<code>!17 AB#42 @contoso/docs</code>`,
+       `<code>GH#17 #42 @contoso/docs</code>`],
+     answer:1,
+     hint:`In GitHub text, <code>#</code> means GitHub. Azure Boards needs a prefix.`,
+     explain:`On GitHub, <code>#17</code> links issue or PR 17 in the same repo. <code>AB#42</code> links Azure Boards work item 42 (the Azure Boards app must be connected). A team mention is <code>@org/team-slug</code>. <code>!17</code> is the Azure DevOps pull request syntax.`},
+    {id:"md-alert", kind:"code", lang:"md", title:"Alert plus a collapsible section",
+     task:`For a GitHub README, write a <b>WARNING</b> alert with the text <i>Rotating this secret restarts the app.</i> Below it, add a collapsible section with the summary <code>Rotation steps</code>. It should contain a numbered list with at least two steps. Leave a blank line after the summary so the Markdown inside renders.`,
+     starter:``,
+     checks:[
+       {l:"Alert opens with > [!WARNING]", t:x => /^>\s*\[!WARNING\]\s*$/m.test(x.src)},
+       {l:"Alert text on a following > line", t:x => /^>\s*\[!WARNING\]\s*\n>\s*\S/m.test(x.src)},
+       {l:"<details> with <summary>Rotation steps</summary>", t:x => /<details>\s*<summary>\s*Rotation steps\s*<\/summary>/i.test(x.src)},
+       {l:"Blank line after </summary>", t:x => /<\/summary>[ \t]*\n[ \t]*\n/i.test(x.src)},
+       {l:"Numbered list with 2+ items inside the details", t:x => { const m = x.src.match(/<\/summary>([\s\S]*?)<\/details>/i); return !!m && (m[1].match(/^\s*\d+\.\s+\S/gm) || []).length >= 2; }},
+       {l:"Closes with </details>", t:x => /<\/details>/i.test(x.src)}
+     ],
+     hint:`An alert is a blockquote whose first line is <code>> [!WARNING]</code>. Collapsible: <code>&lt;details&gt;&lt;summary&gt;…&lt;/summary&gt;</code>, a blank line, the content, then <code>&lt;/details&gt;</code>.`,
+     solution:`> [!WARNING]
+> Rotating this secret restarts the app.
+
+<details>
+<summary>Rotation steps</summary>
+
+1. Create the new secret version in Key Vault.
+2. Restart the app and verify the health endpoint.
+
+</details>`,
+     explain:`Alerts are a GitHub Markdown extension and render with an icon and colour. <code>&lt;details&gt;</code> is plain HTML, so it works on GitHub and in Azure DevOps wikis. Without the blank line after <code>&lt;/summary&gt;</code>, the Markdown inside is shown as raw text.`}
+  ]
+},
+/* ================================================================ 3 */
+{
+  group:"Document",
+  title:"Mermaid diagrams",
+  tag:"Flowchart · sequence · Gantt",
+  intro:`Mermaid turns text into diagrams. Because the diagram is text, it's versioned with the docs, shows up in diffs and is reviewed in pull requests. Binary images in an attachments folder get none of that.`,
+  sections:[
+    {h:"Where Mermaid renders", after:`<table class="ref">
+      <tr><th>Platform</th><th>Syntax</th><th>Notes</th></tr>
+      <tr><td>GitHub (Markdown files, issues, PRs, discussions, wikis)</td><td>a <code>${FENCE}mermaid</code> code block</td><td>Current Mermaid version</td></tr>
+      <tr><td>Azure DevOps wiki</td><td><code>::: mermaid</code> … <code>:::</code> or a <code>${FENCE}mermaid</code> block</td><td>Limited syntax: <b>use <code>graph</code>, not <code>flowchart</code></b>. Long arrows like <code>----></code> and most HTML tags aren't supported.</td></tr>
+     </table>
+     <p>The Azure DevOps wiki supports sequence, Gantt, flowchart (<code>graph</code>), class, state, user journey, pie, requirement, Git graph, entity relationship and timeline diagrams.</p>`},
+    {h:"Flowchart", lang:"mermaid", code:`graph TD
+    A[Push feature branch] --> B{Build OK?}
+    B -- Yes --> C(Open pull request)
+    B -- No --> A
+    C -->|approved| D[(Merge to main)]
+    C -.-> E((Demo))
+    subgraph Release
+      D ==> F[Deploy]
+    end`,
+     p:`Direction: <code>TD</code>/<code>TB</code>, <code>BT</code>, <code>LR</code>, <code>RL</code>. Shapes: <code>[rect]</code>, <code>(rounded)</code>, <code>{decision}</code>, <code>((circle))</code>, <code>[(database)]</code>. Links: <code>--></code> arrow, <code>---</code> line, <code>-.-></code> dotted, <code>==></code> thick. Add a label with <code>-- text --></code> or <code>-->|text|</code>.`},
+    {h:"Sequence diagram", lang:"mermaid", code:`sequenceDiagram
+    autonumber
+    actor Dev as Developer
+    participant GH as GitHub
+    participant CI as Azure Pipelines
+    Dev->>GH: git push
+    GH->>CI: webhook (push event)
+    activate CI
+    CI-->>GH: commit status: pending
+    alt build succeeds
+        CI-->>GH: status: success
+    else build fails
+        CI-->>GH: status: failure
+    end
+    deactivate CI
+    Note over Dev,GH: The check shows on the pull request`,
+     p:`Messages are <code>From&lt;arrow&gt;To: text</code>. <code>-></code> solid line without an arrowhead, <code>--></code> dotted without one, <code>->></code> solid with an arrowhead, <code>-->></code> dotted with an arrowhead (typically a reply), <code>-x</code> ends in a cross, <code>-)</code> async. Blocks: <code>loop</code>, <code>alt/else</code>, <code>opt</code>, <code>par</code>, each closed with <code>end</code>.`},
+    {h:"Gantt chart", lang:"mermaid", code:`gantt
+    title Release 2.0
+    dateFormat YYYY-MM-DD
+    excludes weekends
+    section Build
+    Feature work      :done, feat, 2026-03-02, 10d
+    Hardening         :active, hard, after feat, 5d
+    section Release
+    Release candidate :crit, rc, after hard, 2d
+    Go live           :milestone, live, after rc, 0d`,
+     p:`Task syntax: <code>Name :[tags,] [id,] start, duration-or-end</code>. Tags: <code>done</code>, <code>active</code>, <code>crit</code>, <code>milestone</code>. The start can be a date in the <code>dateFormat</code> or <code>after &lt;id&gt;</code>.`}
+  ],
+  tip:`Typical exam scenario: "Process diagrams must be kept in source control and reviewed like code" → Mermaid in the wiki or README. In an Azure DevOps wiki, remember <code>::: mermaid</code> and the <code>graph</code> keyword.`,
+  exercises:[
+    {id:"mm-flow", kind:"code", lang:"mermaid", title:"Pull request flow for an Azure DevOps wiki",
+     task:`Draw this flow on an Azure DevOps wiki page: <i>Push branch</i> → decision <i>Build passes?</i> → <b>Yes</b>: <i>Code review</i> → <i>Merge to main</i>. <b>No</b>: back to <i>Push branch</i>.
+       <ul class="tips"><li>Use the <code>::: mermaid</code> container</li><li>Top-down, using the keyword Azure DevOps supports</li><li>A decision node, with the two edges labelled <code>Yes</code> and <code>No</code></li></ul>`,
+     starter:``,
+     checks:[
+       {l:"Wrapped in ::: mermaid … :::", t:x => /^:::\s*mermaid\s*$[\s\S]*^:::\s*$/m.test(x.src)},
+       {l:"Uses graph TD (or TB), not flowchart", t:x => /^\s*graph\s+(TD|TB)\s*;?\s*$/m.test(x.src) && !/^\s*flowchart\b/m.test(x.src)},
+       {l:"Has a decision node {…}", t:x => /\w+\{[^}\n]+\}/.test(x.src)},
+       {l:"An edge labelled Yes", t:x => /--\s*Yes\s*-->|-->\s*\|\s*Yes\s*\|/i.test(x.src)},
+       {l:"An edge labelled No", t:x => /--\s*No\s*-->|-->\s*\|\s*No\s*\|/i.test(x.src)},
+       {l:"At least four arrows (including the loop back)", t:x => (x.src.match(/-->/g) || []).length >= 4},
+       {l:"No unsupported long arrows (---->)", t:x => !/---->/.test(x.src)}
+     ],
+     hint:`<code>B{Build passes?} -- Yes --> C[Code review]</code>. To loop back, point an arrow at the first node's ID.`,
+     solution:`::: mermaid
+graph TD
+    A[Push branch] --> B{Build passes?}
+    B -- Yes --> C[Code review]
+    C --> D[Merge to main]
+    B -- No --> A
+:::`,
+     alts:[`::: mermaid\ngraph TB\n  push[Push branch] --> ok{Build passes?}\n  ok -->|Yes| rev[Code review]\n  rev --> merge[Merge to main]\n  ok -->|No| push\n:::`],
+     explain:`The Azure DevOps wiki documents <code>flowchart</code> as unsupported, so use <code>graph</code>. Node IDs (A, B…) are what edges connect. The text in brackets is only the label. That's why you loop back with <code>B -- No --> A</code> instead of repeating the label.`},
+    {id:"mm-seq", kind:"code", lang:"md", title:"Fix a sequence diagram for GitHub",
+     task:`This diagram should render in a GitHub README. Fix it:
+       <ul class="tips"><li>wrap it in a <code>${FENCE}mermaid</code> fence</li><li>requests use a solid arrow with an arrowhead, and the reply uses a dotted arrow with an arrowhead</li><li>every message needs a <code>: text</code> label</li><li>add a note over <code>Hook</code> saying <i>verify signature</i></li></ul>`,
+     starter:`sequenceDiagram
+    participant Dev
+    participant GH as GitHub
+    participant Hook as Webhook receiver
+    Dev -> GH: git push
+    GH ->> Hook POST /webhook
+    Hook ->> GH 200 OK
+`,
+     checks:[
+       {l:"Opens with a ```mermaid fence and closes it", t:x => /^```\s*mermaid\s*$[\s\S]*^```\s*$/m.test(x.src)},
+       {l:"Dev ->> GH: git push", t:x => /^\s*Dev\s*->>\s*GH\s*:\s*git push\s*$/m.test(x.src)},
+       {l:"GH ->> Hook: POST /webhook", t:x => /^\s*GH\s*->>\s*Hook\s*:\s*POST \/webhook\s*$/m.test(x.src)},
+       {l:"Hook -->> GH: 200 OK (dotted reply)", t:x => /^\s*Hook\s*-->>\s*GH\s*:\s*200 OK\s*$/m.test(x.src)},
+       {l:"Note over Hook: verify signature", t:x => /^\s*Note\s+(over|right of|left of)\s+Hook\s*:\s*verify signature\s*$/mi.test(x.src)}
+     ],
+     hint:`<code>A->>B: text</code> is a request and <code>B-->>A: text</code> is a reply. Notes: <code>Note over Hook: text</code>.`,
+     solution:`${FENCE}mermaid
+sequenceDiagram
+    participant Dev
+    participant GH as GitHub
+    participant Hook as Webhook receiver
+    Dev->>GH: git push
+    GH->>Hook: POST /webhook
+    Note over Hook: verify signature
+    Hook-->>GH: 200 OK
+${FENCE}`,
+     explain:`<code>-></code> draws a line without an arrowhead. Use <code>->></code> for calls and <code>-->></code> for responses. A message without a colon and text is a syntax error, so the whole diagram fails to render. On GitHub, only a fenced <code>mermaid</code> block is rendered as a diagram.`},
+    {id:"mm-gantt", kind:"code", lang:"mermaid", title:"Release plan as a Gantt chart",
+     task:`Write a Mermaid Gantt chart:
+       <ul class="tips"><li>title <code>Sprint 42</code>, date format <code>YYYY-MM-DD</code></li>
+       <li>section <code>Build</code>: task <code>Develop</code> with id <code>dev</code>, starting 2026-03-02, 10 days</li>
+       <li>section <code>Test</code>: task <code>Test</code> with id <code>test</code>, starting after <code>dev</code>, 5 days</li>
+       <li>section <code>Release</code>: a <b>milestone</b> <code>Go live</code> right after <code>test</code></li></ul>`,
+     starter:``,
+     checks:[
+       {l:"Starts with gantt", t:x => /^\s*gantt\s*$/m.test(x.src)},
+       {l:"title Sprint 42", t:x => /^\s*title\s+Sprint 42\s*$/m.test(x.src)},
+       {l:"dateFormat YYYY-MM-DD", t:x => /^\s*dateFormat\s+YYYY-MM-DD\s*$/m.test(x.src)},
+       {l:"Three sections: Build, Test, Release", t:x => /^\s*section\s+Build\s*$[\s\S]*^\s*section\s+Test\s*$[\s\S]*^\s*section\s+Release\s*$/m.test(x.src)},
+       {l:"Develop :dev, 2026-03-02, 10d", t:x => /^\s*Develop\s*:[^\n]*\bdev\s*,\s*2026-03-02\s*,\s*10d\s*$/m.test(x.src)},
+       {l:"Test :test, after dev, 5d", t:x => /^\s*Test\s*:[^\n]*\btest\s*,\s*after\s+dev\s*,\s*5d\s*$/m.test(x.src)},
+       {l:"Go live is a milestone after test", t:x => /^\s*Go live\s*:[^\n]*\bmilestone\b[^\n]*after\s+test\b/m.test(x.src)}
+     ],
+     hint:`<code>Develop :dev, 2026-03-02, 10d</code> and <code>Test :test, after dev, 5d</code>. A milestone: <code>Go live :milestone, live, after test, 0d</code>.`,
+     solution:`gantt
+    title Sprint 42
+    dateFormat YYYY-MM-DD
+    section Build
+    Develop :dev, 2026-03-02, 10d
+    section Test
+    Test :test, after dev, 5d
+    section Release
+    Go live :milestone, live, after test, 0d`,
+     explain:`IDs let tasks chain with <code>after &lt;id&gt;</code>, so moving one date shifts the whole plan. Tags such as <code>milestone</code>, <code>crit</code>, <code>done</code> and <code>active</code> come before the ID. Wrap the chart in <code>::: mermaid</code> for an Azure DevOps wiki or in a fenced <code>mermaid</code> block for GitHub.`},
+    {id:"mm-dotted", kind:"mcq", title:"Arrow syntax",
+     task:`In a Mermaid flowchart, which link draws a <b>dotted line with an arrowhead</b> from A to B?`,
+     options:[`<code>A --> B</code>`, `<code>A ==> B</code>`, `<code>A --- B</code>`, `<code>A -.-> B</code>`],
+     answer:3,
+     hint:`The dot is in the middle of the arrow.`,
+     explain:`<code>--></code> is a solid arrow, <code>==></code> a thick arrow, <code>---</code> a line without an arrowhead, and <code>-.-></code> a dotted arrow. Dotted arrows often mark optional or asynchronous steps.`},
+    {id:"mm-ado", kind:"mcq", title:"Diagram doesn't render in the wiki",
+     task:`A diagram renders fine on GitHub, but on an Azure DevOps wiki page this shows only an error:<br><code>::: mermaid</code> / <code>flowchart LR</code> / <code>A[Build] --> B[Deploy]</code> / <code>:::</code><br>What's the simplest fix?`,
+     options:[
+       `Replace <code>::: mermaid</code> with <code>[[_MERMAID_]]</code>`,
+       `Change <code>flowchart LR</code> to <code>graph LR</code>`,
+       `Install a Mermaid extension from the Visual Studio Marketplace`,
+       `Export the diagram as SVG and attach it to the page`],
+     answer:1,
+     hint:`The Azure DevOps docs list a keyword that isn't supported.`,
+     explain:`The Azure DevOps wiki supports a limited Mermaid syntax, and its docs name <code>flowchart</code> as unsupported: use <code>graph</code>. Mermaid is built in, so there's nothing to install. Exporting an image would lose the advantage of a diagram you can diff and review.`}
+  ]
+},
+/* ================================================================ 4 */
+{
+  group:"Release documentation",
+  title:"Release notes",
+  tag:"GitHub releases · release.yml · pipelines",
+  intro:`Release notes tell users what changed. On GitHub you get them almost for free from merged pull requests. In Azure Pipelines you build them from the work items, commits and pull requests linked to a run.`,
+  sections:[
+    {h:"GitHub releases and generated notes", p:`A GitHub release is attached to a <b>tag</b>. It has a title, notes, optional binary assets, and can be a <b>draft</b> or a <b>pre-release</b>. The <b>Generate release notes</b> button (or the API and CLI equivalents) fills the notes with a <i>What's Changed</i> list of merged pull requests since the previous release, a <i>New Contributors</i> section and a <i>Full Changelog</i> compare link. You customise it with <code>.github/release.yml</code>:`,
+     file:".github/release.yml", lang:"yaml", code:`changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+    authors:
+      - octocat
+  categories:
+    - title: Breaking changes 🛠
+      labels:
+        - breaking-change
+    - title: New features 🎉
+      labels:
+        - enhancement
+    - title: Other changes
+      labels:
+        - "*"            # catch-all: quote it, a bare * is YAML alias syntax`,
+     after:`<p>A pull request lands in the <b>first</b> category whose labels match, so the <code>"*"</code> catch-all goes last. You can also put an <code>exclude</code> block inside a single category.</p>`},
+    {h:"Automating it", lang:"sh", code:`# CLI: create a release for an existing tag and let GitHub write the notes
+gh release create v2.4.0 --title "Shop 2.4.0" --generate-notes --draft
+gh release create v2.4.0 --notes-file CHANGELOG-2.4.0.md    # or bring your own notes
+
+# REST
+POST /repos/{owner}/{repo}/releases                  {"tag_name":"v2.4.0","generate_release_notes":true}
+POST /repos/{owner}/{repo}/releases/generate-notes   # preview the generated text only`},
+    {h:"In a GitHub Actions workflow", file:".github/workflows/release.yml", lang:"yaml", code:`name: release
+on:
+  push:
+    tags:
+      - 'v*'
+permissions:
+  contents: write          # creating a release needs write access to contents
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create release with generated notes
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes --verify-tag
+        env:
+          GH_TOKEN: \${{ github.token }}`},
+    {h:"Release notes in Azure Pipelines", p:`Every pipeline run knows its associated <b>commits</b> and <b>work items</b>. A script step can read them through the REST API using the job's <code>System.AccessToken</code>, render Markdown, and publish it as a pipeline artifact or as a wiki page. Marketplace tasks, such as the community <i>Generate Release Notes</i> extension, do the same from a Handlebars template. In a YAML pipeline's <b>Settings</b>, <b>Automatically link new work items in this build</b> adds an <i>Integrated in build</i> link to each associated work item. That gives you traceability from the work item to the build, for Azure Repos and GitHub repos alike.`,
+     lang:"yaml", code:`- script: |
+    curl -s -H "Authorization: Bearer $(System.AccessToken)" \\
+      "$(System.CollectionUri)$(System.TeamProject)/_apis/build/builds/$(Build.BuildId)/workitems?api-version=7.1" \\
+      -o workitems.json
+  displayName: Get work items linked to this run
+# also useful: .../_apis/build/builds/{id}/changes  (commits)
+#              .../_apis/build/workitems?fromBuildId=..&toBuildId=..  (between two runs)`}
+  ],
+  tip:`"Generate release notes automatically from pull requests" on GitHub → <b>generated release notes</b>, customised with <code>.github/release.yml</code> (labels → categories). "Release notes from work items" in Azure DevOps → query the run's work items (REST or a Marketplace task) in the pipeline and publish the result, often to the wiki.`,
+  exercises:[
+    {id:"rn-config", kind:"code", lang:"yaml", title:"Configure generated release notes",
+     task:`Write <code>.github/release.yml</code> so that generated release notes:
+       <ul class="tips"><li>leave out pull requests labelled <code>ignore-for-release</code></li>
+       <li>group PRs labelled <code>enhancement</code> under a title containing <b>Features</b></li>
+       <li>group PRs labelled <code>bug</code> under a title containing <b>Bug</b> or <b>Fixes</b></li>
+       <li>put everything else under <code>Other changes</code> with a <code>"*"</code> catch-all, as the <b>last</b> category</li></ul>`,
+     starter:`# .github/release.yml
+`,
+     checks:[
+       {l:"changelog.exclude.labels contains ignore-for-release", t:x => x.y.h("changelog.exclude.labels[]","ignore-for-release")},
+       {l:"A Features category with label enhancement", t:x => x.y.item("changelog.categories",{title:/feature/i, "labels[]":"enhancement"})},
+       {l:"A Bug/Fixes category with label bug", t:x => x.y.item("changelog.categories",{title:/bug|fix/i, "labels[]":"bug"})},
+       {l:"Other changes category with the \"*\" label (quoted)", t:x => x.y.item("changelog.categories",{title:/other/i, "labels[]":"*"}) && /["']\*["']/.test(x.src)},
+       {l:"The catch-all category comes last", t:x => { const s = x.y.first("changelog.categories[].labels[]","*"); return s < Infinity && s > x.y.first("changelog.categories[].labels[]","enhancement") && s > x.y.first("changelog.categories[].labels[]","bug"); }}
+     ],
+     hint:`Top key <code>changelog:</code> → <code>exclude: labels:</code> and <code>categories:</code>, a list of <code>- title: …</code> + <code>labels: [ … ]</code>.`,
+     solution:`changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+  categories:
+    - title: New Features 🎉
+      labels:
+        - enhancement
+    - title: Bug Fixes 🐛
+      labels:
+        - bug
+    - title: Other changes
+      labels:
+        - "*"`,
+     alts:[`changelog:\n  exclude:\n    labels: [ignore-for-release]\n  categories:\n    - title: Features\n      labels: [enhancement]\n    - title: Fixes\n      labels: [bug]\n    - title: Other changes\n      labels: ["*"]`],
+     explain:`GitHub reads <code>.github/release.yml</code> (or <code>.yaml</code>) from the default branch when it generates notes. Each pull request goes into the first category whose labels match, so a catch-all placed first would swallow everything. <code>*</code> must be quoted because a bare <code>*</code> starts a YAML alias.`},
+    {id:"rn-gh", kind:"code", lang:"sh", title:"Create a draft release with the GitHub CLI",
+     task:`The tag <code>v2.4.0</code> already exists. Write one <code>gh</code> command that creates a <b>draft</b> release for it titled <code>Shop 2.4.0</code>, with automatically generated notes.`,
+     starter:`# gh ...
+`,
+     checks:[
+       {l:"gh release create v2.4.0", t:x => /gh\s+release\s+create\s+["']?v2\.4\.0["']?(\s|$)/.test(x.src)},
+       {l:"--generate-notes", t:x => /--generate-notes\b/.test(x.src)},
+       {l:"Draft (--draft or -d)", t:x => /(\s--draft|\s-d)(\s|$)/.test(x.src)},
+       {l:"Title \"Shop 2.4.0\" (--title or -t)", t:x => /(--title|-t)\s+(["'])Shop 2\.4\.0\2/.test(x.src)}
+     ],
+     hint:`<code>gh release create &lt;tag&gt; --title "…" --generate-notes --draft</code>`,
+     solution:`gh release create v2.4.0 --title "Shop 2.4.0" --generate-notes --draft`,
+     alts:[`gh release create v2.4.0 -d -t 'Shop 2.4.0' --generate-notes`],
+     explain:`<code>--generate-notes</code> calls the same generator as the button in the UI and respects <code>.github/release.yml</code>. A draft isn't public until someone publishes it, which leaves time to polish the generated text. Add <code>--notes-start-tag</code> to compare against a specific earlier tag.`},
+    {id:"rn-workflow", kind:"code", lang:"yaml", title:"Release on every version tag",
+     task:`Write a GitHub Actions workflow that runs when a tag matching <code>v*</code> is pushed. It should create a release for that tag with generated notes using <code>gh release create</code>. Give the workflow the permission it needs and pass the token to <code>gh</code> as <code>GH_TOKEN</code>.`,
+     starter:`# .github/workflows/release.yml
+`,
+     checks:[
+       {l:"on.push.tags includes v*", t:x => x.y.h("on.push.tags[]", /^v\*?/)},
+       {l:"permissions.contents: write", t:x => x.y.h(/^(jobs\.[^.]+\.)?permissions\.contents$/i, "write")},
+       {l:"A job with runs-on", t:x => x.y.h("jobs.*.runs-on")},
+       {l:"A step runs gh release create … --generate-notes", t:x => x.y.h("jobs.*.steps[].run", /gh\s+release\s+create[\s\S]*--generate-notes/)},
+       {l:"GH_TOKEN set from github.token or secrets.GITHUB_TOKEN", t:x => x.y.h(/(^|\.)env\.GH_TOKEN$/i, /\$\{\{\s*(github\.token|secrets\.GITHUB_TOKEN)\s*\}\}/)}
+     ],
+     hint:`<code>on: push: tags: ['v*']</code>, <code>permissions: contents: write</code>, and on the step <code>env: GH_TOKEN: \${{ github.token }}</code>. The tag name is in <code>$GITHUB_REF_NAME</code>.`,
+     solution:`name: release
+on:
+  push:
+    tags:
+      - 'v*'
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: gh release create "$GITHUB_REF_NAME" --generate-notes
+        env:
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}`,
+     explain:`Pushing a tag such as <code>v2.4.0</code> starts the workflow, and <code>GITHUB_REF_NAME</code> holds the tag name. The default <code>GITHUB_TOKEN</code> is often read-only, so the workflow requests <code>contents: write</code>. The <code>gh</code> CLI reads its token from <code>GH_TOKEN</code>.`},
+    {id:"rn-content", kind:"multi", title:"What goes into generated notes?",
+     task:`Which of these does GitHub's <b>automatically generated release notes</b> feature include by default? Select all that apply.`,
+     options:[
+       `A list of the merged pull requests since the previous release`,
+       `Every commit message since the previous release`,
+       `A <i>New Contributors</i> section for first-time contributors`,
+       `A link to the full changelog (a compare view between the two tags)`,
+       `The Azure Boards work items mentioned with <code>AB#</code>`],
+     answer:[0,2,3],
+     hint:`It's built from pull requests, not from individual commits.`,
+     explain:`Generated notes list <b>merged pull requests</b> (title, author, link), grouped by the categories in <code>.github/release.yml</code>. They also include a <b>New Contributors</b> section and a <b>Full Changelog</b> compare link. Individual commits and Azure Boards work items aren't part of them. For those, use a changelog generator or a pipeline step.`},
+    {id:"rn-ado", kind:"mcq", title:"Traceability from work item to build",
+     task:`A YAML pipeline in Azure Pipelines builds a GitHub repo that is connected to Azure Boards. Product owners want each user story's <b>Development</b> section to show the build that included it, so release notes can be compiled from work items. What do you do?`,
+     options:[
+       `Add <code>AB#</code> IDs to the pipeline YAML file`,
+       `Enable <b>Automatically link new work items in this build</b> in the pipeline settings`,
+       `Create a <i>Build completed</i> service hook that posts to a Web Hooks endpoint`,
+       `Require <code>Fixes AB#</code> in every commit with a branch policy`],
+     answer:1,
+     hint:`It's a pipeline setting that creates <i>Integrated in build</i> links.`,
+     explain:`With <b>Automatically link new work items in this build</b> turned on, every work item associated with the run's changes gets an <i>Integrated in build</i> link. A release-notes step can then query <code>_apis/build/builds/{id}/workitems</code>. A service hook only sends a notification and creates no links. GitHub repos have no Azure Repos branch policies.`}
+  ]
+},
+/* ================================================================ 5 */
+{
+  group:"Release documentation",
+  title:"API documentation",
+  tag:"XML docs · DocFX · OpenAPI · publish",
+  intro:`API docs come from two kinds of source. <b>Comments in the code</b> produce reference docs for libraries. <b>OpenAPI definitions</b> describe HTTP APIs. Either way, generate the docs in the pipeline so they always match the code you ship.`,
+  sections:[
+    {h:"Reference docs from code comments", lang:"text", code:`.NET        /// <summary> XML comments  +  <GenerateDocumentationFile>  →  DocFX site
+JS / TS     /** JSDoc */ comments                                  →  JSDoc / TypeDoc
+Python      docstrings                                            →  Sphinx (autodoc)
+C / C++     comment blocks                                        →  Doxygen
+Java        /** Javadoc */                                        →  javadoc`,
+     after:`<div class="file">Calculator.cs</div><div class="codewrap"><pre><code>/// &lt;summary&gt;Calculates the order total including VAT.&lt;/summary&gt;
+/// &lt;param name="order"&gt;The order to price.&lt;/param&gt;
+/// &lt;returns&gt;The total in EUR.&lt;/returns&gt;
+public decimal GetTotal(Order order) { ... }</code></pre></div>`},
+    {h:"DocFX", lang:"sh", code:`dotnet tool update -g docfx     # install or update the DocFX global tool
+docfx init                      # scaffold docfx.json, toc.yml, index.md
+docfx metadata docfx.json       # extract API metadata (YAML) from the projects
+docfx build docfx.json          # build the static site into _site/
+docfx docfx.json --serve        # metadata + build + local preview`,
+     p:`DocFX combines the API reference generated from your assemblies with hand-written Markdown articles. The output is a static site in <code>_site/</code>, which you can host anywhere.`},
+    {h:"OpenAPI for HTTP APIs", p:`<b>Code-first</b>: the framework generates the OpenAPI document from your code. Since .NET 9, ASP.NET Core does this with <code>Microsoft.AspNetCore.OpenApi</code> (<code>builder.Services.AddOpenApi()</code> + <code>app.MapOpenApi()</code> → <code>/openapi/v1.json</code>). Swashbuckle is the older community option. <b>Design-first</b>: you write <code>openapi.yaml</code> by hand, review it, and generate stubs and clients from it. Swagger UI or Redoc render the document as browsable docs. <b>Azure API Management</b> can import it and publish it in its <b>developer portal</b>, with try-it consoles and subscription keys.`,
+     file:"openapi.yaml", lang:"yaml", code:`openapi: 3.0.3
+info:
+  title: Orders API
+  version: 1.2.0
+paths:
+  /orders:
+    get:
+      summary: List orders
+      responses:
+        '200':
+          description: A page of orders`},
+    {h:"Publishing from a pipeline", lang:"yaml", code:`steps:
+  - script: dotnet tool update -g docfx
+    displayName: Install DocFX
+  - script: docfx docs/docfx.json
+    displayName: Build API docs
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: docs/_site
+      artifact: api-docs
+# then deploy the site: Azure Static Web Apps (AzureStaticWebApp@0),
+# a storage static website (az storage blob upload-batch -d '$web' -s docs/_site ...),
+# App Service, or GitHub Pages (actions/upload-pages-artifact + actions/deploy-pages).
+# For an HTTP API: az apim api import --specification-format OpenApi --specification-path openapi.yaml ...`}
+  ],
+  tip:`"Docs must always match the deployed version" → generate them <b>in the build pipeline</b> (code-first OpenAPI, XML comments + DocFX) and deploy them with the release. "External developers need an interactive portal with keys" → import the OpenAPI definition into <b>Azure API Management</b> and use its developer portal.`,
+  exercises:[
+    {id:"api-xml", kind:"code", lang:"xml", title:"Turn on XML documentation",
+     task:`Edit the project file so the build writes the XML documentation file that DocFX and IntelliSense use. Also stop the build from warning about every public member that has no XML comment (warning CS1591).`,
+     starter:`<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+</Project>
+`,
+     checks:[
+       {l:"<GenerateDocumentationFile>true</GenerateDocumentationFile>", t:x => /<GenerateDocumentationFile>\s*true\s*<\/GenerateDocumentationFile>/i.test(x.src)},
+       {l:"It sits inside a <PropertyGroup>", t:x => /<PropertyGroup[^>]*>(?:(?!<\/PropertyGroup>)[\s\S])*<GenerateDocumentationFile>/i.test(x.src)},
+       {l:"<NoWarn> includes 1591", t:x => /<NoWarn>[^<]*\b(CS)?1591\b[^<]*<\/NoWarn>/i.test(x.src)}
+     ],
+     hint:`Both are MSBuild properties: <code>&lt;GenerateDocumentationFile&gt;</code> and <code>&lt;NoWarn&gt;$(NoWarn);1591&lt;/NoWarn&gt;</code>.`,
+     solution:`<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+</Project>`,
+     explain:`<code>GenerateDocumentationFile</code> makes the compiler write <code>&lt;Assembly&gt;.xml</code> next to the DLL. DocFX, IntelliSense and OpenAPI generators pick up the <code>/// &lt;summary&gt;</code> text from it. Keeping <code>$(NoWarn)</code> in the value preserves any warnings that were already suppressed.`},
+    {id:"api-openapi", kind:"code", lang:"yaml", title:"Describe an endpoint in OpenAPI",
+     task:`Write a minimal OpenAPI 3 definition for the <code>Orders API</code>, version <code>1.0.0</code>, with one operation: <code>GET /orders/{id}</code>. It takes a <b>required path parameter</b> <code>id</code> and returns <code>200</code> with a description.`,
+     starter:`openapi: 3.0.3
+`,
+     checks:[
+       {l:"openapi: 3.x", t:x => x.y.h("openapi", /^3\.\d+(\.\d+)?$/)},
+       {l:"info.title Orders API and info.version 1.0.0", t:x => x.y.h("info.title","Orders API") && x.y.h("info.version","1.0.0")},
+       {l:"paths./orders/{id}.get exists", t:x => x.y.h("paths./orders/{id}.get")},
+       {l:"Parameter id: in path, required true", t:x => x.y.item("paths./orders/{id}.get.parameters",{name:"id", in:"path", required:"true"})},
+       {l:"responses 200 has a description", t:x => x.y.h("paths./orders/{id}.get.responses.200.description", /\S/)}
+     ],
+     hint:`Path parameters are a list under the operation: <code>- name: id</code>, <code>in: path</code>, <code>required: true</code>, <code>schema: { type: string }</code>. Quote the response code: <code>'200':</code>.`,
+     solution:`openapi: 3.0.3
+info:
+  title: Orders API
+  version: 1.0.0
+paths:
+  /orders/{id}:
+    get:
+      summary: Get one order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The order`,
+     explain:`OpenAPI requires every path parameter to have <code>required: true</code>. Response codes are keys under <code>responses</code>, and each one needs a <code>description</code>. A definition like this can be rendered by Swagger UI or Redoc, imported into API Management, and checked by a linter in the pipeline.`},
+    {id:"api-pipeline", kind:"code", lang:"yaml", title:"Build and publish docs in Azure Pipelines",
+     task:`Write the <code>steps:</code> of an Azure Pipelines job that installs DocFX as a .NET global tool, builds <code>docs/docfx.json</code>, and publishes the generated <code>docs/_site</code> folder as a pipeline artifact named <code>api-docs</code>.`,
+     starter:`steps:
+`,
+     checks:[
+       {l:"Installs DocFX with dotnet tool install/update -g", t:x => x.y.h("steps[].script", /dotnet\s+tool\s+(install|update)\s+(-g|--global)\s+docfx/i)},
+       {l:"Runs DocFX on docs/docfx.json", t:x => x.y.h("steps[].script", /\bdocfx\s+(build\s+)?(\.\/)?docs\/docfx\.json/i)},
+       {l:"Publishes docs/_site (PublishPipelineArtifact@1 or publish:)", t:x => x.y.item("steps",{task:/^PublishPipelineArtifact@1$/i, "inputs.*":/docs\/_site/}) || x.y.h("steps[].publish", /docs\/_site/)},
+       {l:"Artifact name api-docs", t:x => x.y.h(/^steps\[\]\.(inputs\.)?(artifact|artifactName)$/i, "api-docs")}
+     ],
+     hint:`Two <code>- script:</code> steps, then <code>- task: PublishPipelineArtifact@1</code> with <code>targetPath</code> and <code>artifact</code>, or the shortcut <code>- publish: docs/_site</code> + <code>artifact: api-docs</code>.`,
+     solution:`steps:
+  - script: dotnet tool update -g docfx
+    displayName: Install DocFX
+  - script: docfx docs/docfx.json
+    displayName: Build API docs
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: docs/_site
+      artifact: api-docs`,
+     alts:[`steps:\n  - script: dotnet tool install --global docfx\n  - script: docfx build docs/docfx.json\n  - publish: docs/_site\n    artifact: api-docs`],
+     explain:`Building the docs in the same pipeline as the code ties each docs version to a build. A later stage can deploy the artifact to Static Web Apps, a storage static website, App Service or GitHub Pages, so the published docs always match the released version.`},
+    {id:"api-apim", kind:"mcq", title:"A portal for external API consumers",
+     task:`External partners consume your REST API. They need browsable, always-current docs where they can sign up, get a subscription key and try calls interactively. Your pipeline already produces <code>openapi.json</code>. What's the best fit?`,
+     options:[
+       `Commit <code>openapi.json</code> to the project wiki after each release`,
+       `Generate a PDF from the OpenAPI file and attach it to the GitHub release`,
+       `Import the OpenAPI definition into Azure API Management from the pipeline and publish the developer portal`,
+       `Send the file to partners from a Teams channel with the Workflows app`],
+     answer:2,
+     hint:`Sign-up, keys and a try-it console are features of one Azure service.`,
+     explain:`Azure API Management imports OpenAPI definitions (for example <code>az apim api import --specification-format OpenApi …</code> in a pipeline). Its <b>developer portal</b> provides sign-up, subscription keys, interactive try-it consoles and docs that update on every import. A wiki page or a PDF goes out of date and can't issue keys.`}
+  ]
+},
+/* ================================================================ 6 */
+{
+  group:"Release documentation",
+  title:"Docs from Git history",
+  tag:"git log · tags · Conventional Commits",
+  intro:`Your Git history already describes every change. With disciplined commit messages and a few <code>git log</code> options you can generate changelogs and decide version numbers automatically.`,
+  sections:[
+    {h:"git log formats", lang:"sh", code:`git log --oneline                                   # a1b2c3d Fix login redirect
+git log --pretty=format:"%h %as %an %s"             # a1b2c3d 2026-03-04 Ana Fix login redirect
+git log v1.3.0..v1.4.0 --no-merges --pretty=format:"- %s (%h)"
+git log --merges --first-parent main --pretty=format:"%s"   # one line per merged PR
+git describe --tags --abbrev=0                      # most recent tag reachable from HEAD
+git shortlog -sn v1.3.0..v1.4.0                     # contributors with commit counts`,
+     after:`<table class="ref">
+      <tr><th>Placeholder</th><th>Meaning</th><th>Placeholder</th><th>Meaning</th></tr>
+      <tr><td><code>%H</code> / <code>%h</code></td><td>full / short hash</td><td><code>%an</code> / <code>%ae</code></td><td>author name / email</td></tr>
+      <tr><td><code>%s</code></td><td>subject (first line)</td><td><code>%ad</code></td><td>author date (format with <code>--date=short|iso|relative</code>)</td></tr>
+      <tr><td><code>%b</code></td><td>body</td><td><code>%as</code></td><td>author date as YYYY-MM-DD</td></tr>
+      <tr><td><code>%d</code></td><td>ref names (tags, branches)</td><td><code>%n</code></td><td>newline</td></tr>
+     </table>
+     <p><code>A..B</code> means "commits reachable from B but not from A", so <code>v1.3.0..v1.4.0</code> is everything in 1.4.0 that wasn't in 1.3.0. Filter with <code>--no-merges</code>, <code>--author=</code>, <code>--grep=</code>, <code>--since=</code>.</p>`},
+    {h:"Tags mark releases", lang:"sh", code:`git tag -a v1.4.0 -m "Release 1.4.0"   # annotated tag: tagger, date, message
+git push origin v1.4.0                   # tags aren't pushed by default
+git describe --tags --abbrev=0           # --tags also considers lightweight tags`},
+    {h:"Conventional Commits", lang:"text", code:`feat(api): add pagination to GET /orders
+
+Adds page and pageSize query parameters.
+
+Refs: AB#1234
+BREAKING CHANGE: GET /orders now returns at most 50 items per page.`,
+     p:`Format: <code>&lt;type&gt;[(scope)][!]: &lt;description&gt;</code>, then an optional body and footers. <code>fix</code> → <b>PATCH</b>, <code>feat</code> → <b>MINOR</b>, a <code>!</code> after the type/scope or a <code>BREAKING CHANGE:</code> footer → <b>MAJOR</b>. Other types such as <code>build</code>, <code>chore</code>, <code>ci</code>, <code>docs</code>, <code>perf</code>, <code>refactor</code>, <code>style</code> and <code>test</code> don't bump the version by default. <b>commitlint</b> (in a <code>commit-msg</code> hook via husky, or as a CI check) enforces the format. <b>semantic-release</b>, <b>release-please</b>, <b>conventional-changelog</b> or <b>git-cliff</b> then generate <code>CHANGELOG.md</code>, the next version and the tag.`}
+  ],
+  tip:`"Automate documentation from Git history" → structured commit messages (Conventional Commits) plus a changelog generator in the pipeline. For simpler needs, <code>git log</code> between two tags with a <code>--pretty=format:</code> string.`,
+  exercises:[
+    {id:"git-log", kind:"code", lang:"sh", title:"Changelog lines between two tags",
+     task:`Write one <code>git log</code> command that lists every commit in <code>v1.4.0</code> that wasn't in <code>v1.3.0</code>, <b>excluding merge commits</b>, formatted as Markdown bullets like <code>- Fix login redirect (a1b2c3d)</code>.`,
+     starter:`# git log ...
+`,
+     checks:[
+       {l:"git log with the range v1.3.0..v1.4.0", t:x => /git\s+log\b[^\n]*\bv1\.3\.0\.\.v1\.4\.0\b/.test(x.src)},
+       {l:"--no-merges", t:x => /--no-merges\b/.test(x.src)},
+       {l:"Format \"- %s (%h)\" via --pretty=format: / --format=", t:x => /(--pretty=(t?format:)|--format=)\s*(["']?)-\s+%s\s+\(%h\)\3/.test(x.src)}
+     ],
+     hint:`Range <code>old..new</code>. Placeholders: <code>%s</code> subject, <code>%h</code> short hash.`,
+     solution:`git log v1.3.0..v1.4.0 --no-merges --pretty=format:"- %s (%h)"`,
+     alts:[`git log --no-merges --format='- %s (%h)' v1.3.0..v1.4.0`, `git log v1.3.0..v1.4.0 --pretty=tformat:"- %s (%h)" --no-merges`],
+     bad:[`git log v1.4.0..v1.3.0 --no-merges --pretty=format:"- %s (%h)"`],
+     explain:`<code>v1.3.0..v1.4.0</code> means reachable from v1.4.0 but not from v1.3.0. Reversing the range returns nothing. <code>--no-merges</code> drops the "Merge pull request #…" noise. Redirect the output to a file (<code>&gt; CHANGELOG-1.4.0.md</code>) and you have release notes.`},
+    {id:"git-since", kind:"code", lang:"sh", title:"Everything since the last tag",
+     task:`Write a two-line script. Line 1 stores the most recent tag reachable from <code>HEAD</code> in the variable <code>LAST_TAG</code>. Line 2 prints a one-line-per-commit log of everything from that tag up to <code>HEAD</code>, excluding merges.`,
+     starter:`# LAST_TAG=...
+`,
+     checks:[
+       {l:"LAST_TAG=$(git describe --tags --abbrev=0)", t:x => /LAST_TAG=\$\(\s*git\s+describe\s+(--tags\s+--abbrev=0|--abbrev=0\s+--tags)\s*\)/.test(x.src)},
+       {l:"git log $LAST_TAG..HEAD", t:x => /git\s+log\b[^\n]*["']?\$\{?LAST_TAG\}?["']?\.\.HEAD\b/.test(x.src)},
+       {l:"--no-merges", t:x => /git\s+log\b[^\n]*--no-merges/.test(x.src)},
+       {l:"One line per commit (--oneline or a --pretty/--format string)", t:x => /git\s+log\b[^\n]*(--oneline|--pretty=|--format=)/.test(x.src)}
+     ],
+     hint:`<code>git describe --tags --abbrev=0</code> prints just the tag name. Then use the range <code>"$LAST_TAG"..HEAD</code>.`,
+     solution:`LAST_TAG=$(git describe --tags --abbrev=0)
+git log "$LAST_TAG"..HEAD --no-merges --oneline`,
+     alts:[`LAST_TAG=$(git describe --abbrev=0 --tags)\ngit log \${LAST_TAG}..HEAD --pretty=format:"- %s" --no-merges`],
+     explain:`<code>--abbrev=0</code> stops <code>describe</code> from adding the <code>-3-gabc1234</code> suffix, so you get the bare tag. <code>--tags</code> includes lightweight tags too. In a pipeline, check out with full history (<code>fetchDepth: 0</code> in Azure Pipelines, <code>fetch-depth: 0</code> in <code>actions/checkout</code>). Otherwise there may be no tags to describe.`},
+    {id:"git-cc", kind:"code", lang:"text", title:"Write Conventional Commit messages",
+     task:`Write three commit subject lines (one per line):
+       <ol class="tips"><li>a new feature in scope <code>api</code>: add pagination to the orders endpoint</li>
+       <li>a bug fix in scope <code>ui</code>: fix the date picker time zone</li>
+       <li>a <b>breaking change</b> that removes the v1 endpoint. Mark it in the subject, or add a <code>BREAKING CHANGE:</code> footer line after it.</li></ol>`,
+     starter:``,
+     checks:[
+       {l:"feat(api): <description>", t:x => /^feat\(api\):\s+\S/m.test(x.src)},
+       {l:"fix(ui): <description>", t:x => /^fix\(ui\):\s+\S/m.test(x.src)},
+       {l:"A breaking change: type[(scope)]!: … or a BREAKING CHANGE: footer", t:x => /^[a-z]+(\([\w.\/-]+\))?!:\s+\S/m.test(x.src) || /^BREAKING[ -]CHANGE:\s+\S/m.test(x.src)},
+       {l:"Each subject has a space after the colon", t:x => x.lines.filter(l => /^[a-z]+(\([^)]*\))?!?:/.test(l)).every(l => /^[a-z]+(\([^)]*\))?!?: \S/.test(l))}
+     ],
+     hint:`<code>type(scope): description</code>. Breaking: <code>feat(api)!: …</code> or a footer line <code>BREAKING CHANGE: …</code>.`,
+     solution:`feat(api): add pagination to the orders endpoint
+fix(ui): use the user's time zone in the date picker
+feat(api)!: remove the v1 orders endpoint`,
+     alts:[`feat(api): add pagination\nfix(ui): fix date picker time zone\nrefactor: remove v1 endpoint\nBREAKING CHANGE: /v1/orders is gone, use /v2/orders`],
+     explain:`Tools map these to versions: the <code>feat</code> → minor, the <code>fix</code> → patch, and the <code>!</code> or <code>BREAKING CHANGE:</code> → major. A changelog generator groups the lines into <i>Features</i>, <i>Bug Fixes</i> and <i>Breaking Changes</i>.`},
+    {id:"git-semver", kind:"mcq", title:"What's the next version?",
+     task:`The last release is <code>2.3.1</code>. Since then these commits landed:<br><code>docs: fix typo in README</code><br><code>fix(cart): round totals correctly</code><br><code>feat(auth): support passkeys</code><br><code>chore(deps): bump lodash</code><br>With the default Conventional Commits rules (for example semantic-release), what's the next version?`,
+     options:[`2.3.2`, `2.4.0`, `3.0.0`, `2.4.1`],
+     answer:1,
+     hint:`The highest-ranking change wins: breaking > feat > fix.`,
+     explain:`There's a <code>feat</code> and no breaking change, so the minor version goes up and the patch resets: <b>2.4.0</b>. The <code>fix</code> alone would have produced 2.3.2. <code>docs</code> and <code>chore</code> don't trigger a release by default. A <code>feat!:</code> or <code>BREAKING CHANGE:</code> footer would have produced 3.0.0.`},
+    {id:"git-lint", kind:"mcq", title:"Enforce the convention",
+     task:`Your changelog generator depends on Conventional Commits, but people keep writing messages like "stuff" and "wip". Which tool rejects non-conforming commit messages, locally in a <code>commit-msg</code> hook and as a pull request check?`,
+     options:[`git-cliff`, `DocFX`, `commitlint`, `release-please`],
+     answer:2,
+     hint:`Its name says what it does to commit messages.`,
+     explain:`<b>commitlint</b> validates messages against a ruleset (for example <code>@commitlint/config-conventional</code>). Run it from a husky <code>commit-msg</code> hook and as a CI step on pull requests. git-cliff and release-please <i>consume</i> the history to produce changelogs and releases. DocFX builds documentation sites. If you squash-merge, also validate the PR title, because it becomes the commit subject.`}
+  ]
+},
+/* ================================================================ 7 */
+{
+  group:"Integrate",
+  title:"Webhooks & service hooks",
+  tag:"GitHub webhooks · signatures · service hooks",
+  intro:`Webhooks push events to other systems the moment something happens, so nobody has to poll. GitHub calls them <b>webhooks</b>. Azure DevOps calls them <b>service hooks</b>. Both send an HTTP POST with a JSON payload, and the receiver is responsible for checking that the request is genuine.`,
+  sections:[
+    {h:"GitHub webhooks", p:`You can create a webhook on a <b>repository</b>, an <b>organization</b> or a <b>GitHub App</b>. You configure: <b>Payload URL</b>, <b>Content type</b> (<code>application/json</code> or <code>application/x-www-form-urlencoded</code>), a <b>Secret</b>, SSL verification, and which <b>events</b> to send (just <code>push</code>, everything, or a selection such as <code>pull_request</code>, <code>issues</code>, <code>release</code>, <code>workflow_run</code>). GitHub sends a <code>ping</code> event when the webhook is created.`,
+     after:`<table class="ref">
+      <tr><th>Delivery header</th><th>Meaning</th></tr>
+      <tr><td><code>X-GitHub-Event</code></td><td>Event name, such as <code>push</code> or <code>pull_request</code>. The payload's <code>action</code> field says what happened (opened, closed…).</td></tr>
+      <tr><td><code>X-GitHub-Delivery</code></td><td>A GUID that identifies this delivery</td></tr>
+      <tr><td><code>X-Hub-Signature-256</code></td><td><code>sha256=</code> + the HMAC-SHA256 hex digest of the raw body, keyed with your secret. Sent only when a secret is set.</td></tr>
+      <tr><td><code>X-Hub-Signature</code></td><td>Legacy HMAC-SHA1 version. Use the SHA-256 header.</td></tr>
+      <tr><td><code>X-GitHub-Hook-ID</code></td><td>ID of the webhook configuration</td></tr>
+     </table>
+     <p>Respond with a <b>2XX within 10 seconds</b>: queue the work and process it asynchronously. GitHub <b>doesn't automatically redeliver</b> failed deliveries. You redeliver them from <b>Recent Deliveries</b> or through the REST API.</p>`},
+    {h:"Validating the signature", file:"verify.py", lang:"text", code:`import hmac, hashlib
+
+def is_valid(secret: str, raw_body: bytes, header: str) -> bool:
+    expected = "sha256=" + hmac.new(secret.encode(), raw_body, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected, header or "")`,
+     p:`Use the <b>raw body bytes</b>, not JSON you parsed and re-serialised, because any change breaks the HMAC. Compare in <b>constant time</b> (<code>compare_digest</code>, <code>timingSafeEqual</code>), never with <code>==</code>. The secret is never sent over the wire, only the signature.`},
+    {h:"Azure DevOps service hooks", p:`<b>Project settings → Service hooks → Create subscription</b>: pick a <b>service</b> (the consumer), a <b>trigger</b> event with filters, then the action settings. Events include <i>Build completed</i>, <i>Code pushed</i>, <i>Pull request created / updated / merge attempted</i>, <i>Work item created / updated / commented on</i>, <i>Release deployment completed</i>, and <i>Run state changed</i> / <i>Run stage state changed</i> for YAML pipelines. Consumers include <b>Web Hooks</b> (HTTP POST; optional basic authentication and custom HTTP headers; choose how much resource detail and how many messages to send: All, Minimal or None), <b>Azure Service Bus</b>, <b>Azure Storage Queue</b>, Jenkins and several third-party services. By default, Project Administrators manage subscriptions. Each subscription's <b>History</b> shows its deliveries. You can also script subscriptions with the REST API (<code>_apis/hooks/subscriptions</code>). The old Microsoft Teams service-hook integration, which was based on Office 365 connectors, is retired. Use the Teams apps (module 9) instead.`},
+    {h:"Webhooks into pipelines", p:`Going the other way, an external system can <b>trigger</b> a pipeline. In Azure Pipelines, create an <b>Incoming WebHook</b> service connection (webhook name, plus an optional secret so payloads are checksum-validated). Declare it as a resource, then POST to <code>https://dev.azure.com/&lt;org&gt;/_apis/public/distributedtask/webhooks/&lt;webhook name&gt;?api-version=6.0-preview</code>. In GitHub Actions, the equivalent is <code>repository_dispatch</code> (<code>POST /repos/{owner}/{repo}/dispatches</code> with an <code>event_type</code>).`,
+     lang:"yaml", code:`trigger: none
+resources:
+  webhooks:
+    - webhook: ArtifactPublished        # alias, also the name used in the URL
+      connection: artifact-hook-conn     # the Incoming WebHook service connection
+      filters:
+        - path: repositoryName           # JSON path in the payload
+          value: maven-releases          # only run when it has this value
+steps:
+  - script: echo "Version \${{ parameters.ArtifactPublished.version }}"`}
+  ],
+  tip:`Know the GitHub header names (<code>X-GitHub-Event</code>, <code>X-Hub-Signature-256</code>), that the secret produces an HMAC-SHA256 of the body, and the 10-second response window. For Azure DevOps, the pattern is publisher → event + filters → consumer. If the receiver can be offline, use a queue consumer (Service Bus / Storage Queue).`,
+  exercises:[
+    {id:"hook-verify", kind:"code", lang:"js", title:"Verify a GitHub webhook signature",
+     task:`Complete <code>isFromGitHub(req)</code> in Node.js. <code>req.rawBody</code> is a Buffer with the exact bytes GitHub sent, and the secret is in <code>process.env.WEBHOOK_SECRET</code>. Read the SHA-256 signature header, compute the expected value, and compare the two in constant time. Return <code>false</code> when the lengths differ, because <code>timingSafeEqual</code> throws on different lengths.`,
+     starter:`const crypto = require("node:crypto");
+
+function isFromGitHub(req) {
+  const received = req.headers[/* which header? (Node lowercases names) */];
+  // compute the expected signature and compare safely
+}
+`,
+     checks:[
+       {l:"Reads the x-hub-signature-256 header", t:x => /["'`]x-hub-signature-256["'`]/i.test(x.src)},
+       {l:"HMAC with sha256 keyed by the secret", t:x => /createHmac\(\s*["'`]sha256["'`]\s*,\s*[^)]*(secret|SECRET)/.test(x.src)},
+       {l:"Hashes the raw body", t:x => /\.update\(\s*[\w.]*raw\w*\s*\)/i.test(x.src)},
+       {l:"Hex digest with the sha256= prefix", t:x => /digest\(\s*["'`]hex["'`]\s*\)/.test(x.src) && /["'`]sha256=/.test(x.src)},
+       {l:"Constant-time compare with timingSafeEqual", t:x => /timingSafeEqual\(/.test(x.src)},
+       {l:"Guards against different lengths", t:x => /\.length\s*(!==|===|!=|==)/.test(x.src)}
+     ],
+     hint:`<code>"sha256=" + crypto.createHmac("sha256", secret).update(req.rawBody).digest("hex")</code>. Turn both strings into Buffers before <code>crypto.timingSafeEqual(a, b)</code>.`,
+     solution:`const crypto = require("node:crypto");
+
+function isFromGitHub(req) {
+  const received = req.headers["x-hub-signature-256"] || "";
+  const expected = "sha256=" + crypto
+    .createHmac("sha256", process.env.WEBHOOK_SECRET)
+    .update(req.rawBody)
+    .digest("hex");
+  const a = Buffer.from(expected);
+  const b = Buffer.from(received);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}`,
+     explain:`Only someone who knows the secret can produce a matching HMAC over these exact bytes, so a match proves the request came from GitHub and wasn't modified. Hash the raw body: parsing and re-serialising JSON changes whitespace and key order. A constant-time compare avoids leaking, through response timing, how many leading characters matched.`},
+    {id:"hook-sig", kind:"mcq", title:"Which signature is valid?",
+     task:`The webhook secret is <code>s3cr3t</code> and the raw body is exactly <code>{"action":"opened"}</code>. HMAC-SHA256 of that body with that key is <code>893b8b176c39b217756497563a1b9ba1507d371642b1edf4ee9f876b8fd74ecc</code>. Which header would a correct receiver accept?`,
+     options:[
+       `<code>X-Hub-Signature-256: 893b8b176c39b217756497563a1b9ba1507d371642b1edf4ee9f876b8fd74ecc</code>`,
+       `<code>X-Hub-Signature: sha256=893b8b176c39b217756497563a1b9ba1507d371642b1edf4ee9f876b8fd74ecc</code>`,
+       `<code>X-Hub-Signature-256: sha256=893b8b176c39b217756497563a1b9ba1507d371642b1edf4ee9f876b8fd74ecc</code>`,
+       `<code>X-Hub-Signature-256: sha256=s3cr3t</code>`],
+     answer:2,
+     hint:`Right header name, right prefix, and the secret itself never travels.`,
+     explain:`GitHub sends <code>X-Hub-Signature-256: sha256=&lt;hex digest&gt;</code>. Without the <code>sha256=</code> prefix, a correct string comparison fails. <code>X-Hub-Signature</code> is the legacy header and carries a <code>sha1=</code> value. The secret itself never appears in a request.`},
+    {id:"hook-event", kind:"text", title:"Which event is this?",
+     task:`A single endpoint receives several GitHub event types. Which request header tells it the event type (for example <code>pull_request</code>)?`,
+     placeholder:"X-...",
+     accept:[/^X-GitHub-Event:?$/i],
+     solution:`X-GitHub-Event`,
+     bad:[`X-GitHub-Delivery`, `X-Hub-Signature-256`],
+     hint:`It's in the <code>X-GitHub-*</code> family.`,
+     explain:`Switch on <code>X-GitHub-Event</code> (for example <code>push</code>, <code>pull_request</code>, <code>ping</code>), then on the payload's <code>action</code> field. <code>X-GitHub-Delivery</code> is the unique GUID of the delivery. It's handy for de-duplicating and for finding the delivery in Recent Deliveries.`},
+    {id:"hook-trigger", kind:"code", lang:"yaml", title:"Trigger a pipeline from an external webhook",
+     task:`Write an Azure Pipelines YAML file that:
+       <ul class="tips"><li>has <b>no</b> CI trigger</li>
+       <li>is triggered by a webhook resource with alias <code>OrderEvents</code> through the Incoming WebHook service connection <code>orders-hook</code></li>
+       <li>only runs when the payload's <code>eventType</code> equals <code>order.created</code></li>
+       <li>has a script step that echoes the payload's <code>orderId</code></li></ul>`,
+     starter:``,
+     checks:[
+       {l:"trigger: none", t:x => x.y.h("trigger","none")},
+       {l:"resources.webhooks item: webhook OrderEvents, connection orders-hook", t:x => x.y.item("resources.webhooks",{webhook:"OrderEvents", connection:"orders-hook"})},
+       {l:"Filter: path eventType, value order.created", t:x => x.y.item("resources.webhooks[].filters",{path:"eventType", value:"order.created"})},
+       {l:"A step uses \${{ parameters.OrderEvents.orderId }}", t:x => x.y.h(/^steps\[\]\.(script|bash|pwsh|powershell|inputs\.script)$/i, /\$\{\{\s*parameters\.OrderEvents\.orderId\s*\}\}/)}
+     ],
+     hint:`<code>resources: webhooks: - webhook: … connection: … filters: - path: … value: …</code>. Payload fields are available as <code>\${{ parameters.&lt;alias&gt;.&lt;field&gt; }}</code>.`,
+     solution:`trigger: none
+
+resources:
+  webhooks:
+    - webhook: OrderEvents
+      connection: orders-hook
+      filters:
+        - path: eventType
+          value: order.created
+
+steps:
+  - script: echo "New order \${{ parameters.OrderEvents.orderId }}"`,
+     explain:`The external system POSTs JSON to <code>…/_apis/public/distributedtask/webhooks/OrderEvents?api-version=6.0-preview</code>. Filters stop the run unless the JSON path has the given value. If you set a secret on the service connection, Azure DevOps validates the payload checksum before it starts a run.`},
+    {id:"hook-facts", kind:"multi", title:"GitHub webhook behaviour",
+     task:`Which statements about GitHub webhooks are true? Select all that apply.`,
+     options:[
+       `Your endpoint should return a 2XX response within 10 seconds`,
+       `GitHub automatically retries failed deliveries every few minutes for a day`,
+       `A <code>ping</code> event is sent when you create a webhook`,
+       `The secret is sent in the <code>X-Hub-Secret</code> header so you can compare it`,
+       `You can redeliver a past delivery from the webhook's Recent Deliveries page`],
+     answer:[0,2,4],
+     hint:`Two of the options are invented. The secret never leaves GitHub.`,
+     explain:`GitHub expects a quick 2XX (within 10 seconds), so do the heavy work asynchronously. A <code>ping</code> event confirms the configuration. Failed deliveries are <b>not</b> retried automatically: you redeliver them manually or through the REST API. There's no <code>X-Hub-Secret</code> header. The secret only keys the HMAC in <code>X-Hub-Signature-256</code>.`},
+    {id:"hook-queue", kind:"mcq", title:"Don't lose events",
+     task:`Every work item update in Azure Boards must be processed by an internal billing service. The service is taken offline for maintenance every week, and it must not miss any events. What do you configure?`,
+     options:[
+       `A service hook with the <b>Web Hooks</b> consumer posting straight to the billing service`,
+       `A service hook with the <b>Azure Service Bus</b> consumer. The billing service reads from the queue.`,
+       `An email notification subscription for the billing team`,
+       `The Azure Boards app for Microsoft Teams in the billing channel`],
+     answer:1,
+     hint:`Something has to hold the events while the receiver is down.`,
+     explain:`A queue such as Azure Service Bus (or Azure Storage Queue) separates the sender from the receiver. Azure DevOps delivers to the queue, and the billing service drains it when it comes back, so no events are lost. A direct web hook fails while the endpoint is down. Email and Teams are for people, not systems.`}
+  ]
+},
+/* ================================================================ 8 */
+{
+  group:"Integrate",
+  title:"Azure Boards + GitHub",
+  tag:"Azure Boards app · AB# · state transitions",
+  intro:`Many teams keep code on GitHub and plan their work in Azure Boards. The <b>Azure Boards app</b> connects the two, so commits, pull requests, branches and issues link to work items and can move them through their workflow.`,
+  sections:[
+    {h:"Connecting", p:`<b>From GitHub</b>: install the <b>Azure Boards</b> app from the GitHub Marketplace, choose all repositories or selected ones, then pick the Azure DevOps organization and project. <b>From Azure DevOps</b>: <b>Project settings → Boards → GitHub connections → Connect your GitHub account</b> (a personal access token is also supported), then select the repos. Azure DevOps Services works with GitHub.com and GitHub Enterprise Server. Azure DevOps Server works with GitHub Enterprise Server only. Microsoft recommends connecting a repo to projects in <b>a single</b> Azure DevOps organization, because connecting it to several can cause unexpected <code>AB#</code> linking.`},
+    {h:"Linking with AB#", p:`Write <code>AB#{ID}</code> in a <b>commit message</b>, a <b>pull request description</b> or an <b>issue description</b>. The link appears in the work item's <b>Development</b> section, and links from a PR description also appear in the PR's Development area on GitHub. <code>AB#</code> in a <b>PR title</b> or a <b>comment</b> doesn't create a link. From the work item you can also <b>Add link</b> to a GitHub commit, PR or branch, use <b>Work item actions → New GitHub branch</b>, and mention GitHub PRs in discussions with <code>!</code>. The resulting links update automatically: a PR created from a linked branch is linked, its merge commit is linked, and deleting the branch removes its link.`},
+    {h:"State transitions", after:`<table class="ref">
+      <tr><th>Text in the commit or PR</th><th>Result</th></tr>
+      <tr><td><code>AB#123</code> · <code>Adds a feature, AB#123.</code></td><td>Links 123, no state change</td></tr>
+      <tr><td><code>Fixed AB#123</code> (also <code>fix</code> / <code>fixes</code>)</td><td>Links 123 and moves it to the first state in the <b>Resolved</b> category. If the process has none, the first state in the <b>Completed</b> category.</td></tr>
+      <tr><td><code>Closed AB#123</code></td><td>Moves it to the <i>Closed</i> state, if that state exists</td></tr>
+      <tr><td><code>Fixes AB#123, AB#124, and AB#126</code></td><td>Links all three, but <b>only 123</b> transitions</td></tr>
+      <tr><td><code>Fixes AB#123, Fixes AB#124, Fixes AB#125</code></td><td>Links and transitions all three</td></tr>
+     </table>
+     <p>Transitions only happen when the pull request is <b>merged into the default branch</b>. Links are created whatever the target branch.</p>`},
+    {h:"Extras", p:`Turn on GitHub annotations on board cards to open linked commits and PRs from the board. Add an Azure Boards <b>status badge</b> to a GitHub README. For a YAML pipeline that builds the GitHub repo, enable <b>Automatically link new work items in this build</b> to get <i>Integrated in build</i> links.`}
+  ],
+  tip:`Exam favourites: <code>AB#</code> syntax, which keyword transitions which work item, the "only on merge into the default branch" rule, and that the integration is set up by installing the <b>Azure Boards app</b> in GitHub (or adding a GitHub connection in project settings).`,
+  exercises:[
+    {id:"ab-commit", kind:"code", lang:"text", title:"Link and resolve two work items",
+     task:`Write a pull request description for a GitHub repo connected to Azure Boards. Merging it should <b>link</b> work items <b>101</b> and <b>102</b> and <b>transition both</b> to their resolved state. Use the <code>fix</code> family of keywords.`,
+     starter:``,
+     checks:[
+       {l:"Work item 101 with a fix keyword right before it", t:x => /\bfix(e[sd])?\s+AB#101\b/i.test(x.src)},
+       {l:"Work item 102 with its own fix keyword", t:x => /\bfix(e[sd])?\s+AB#102\b/i.test(x.src)}
+     ],
+     hint:`One keyword only transitions the first <code>AB#</code> after it.`,
+     solution:`Correct rounding in the cart total. Fixes AB#101, Fixes AB#102`,
+     alts:[`Fixed AB#101\nfixes AB#102`],
+     bad:[`Fixes AB#101, AB#102`],
+     explain:`With <code>Fixes AB#101, AB#102</code> only 101 would move. Each work item needs its own keyword. The move happens when the PR is merged into the default branch. The work item goes to the first <i>Resolved</i>-category state, or the first <i>Completed</i>-category state if the process has no Resolved category.`},
+    {id:"ab-multi", kind:"mcq", title:"One keyword, several IDs",
+     task:`A pull request with the description <code>Fixes AB#123, AB#124, and AB#126</code> is merged into <code>main</code> (the default branch). What happens?`,
+     options:[
+       `All three work items are linked and transitioned`,
+       `All three are linked; only 123 is transitioned`,
+       `Only 123 is linked and transitioned`,
+       `Nothing, because a comma-separated list isn't supported`],
+     answer:1,
+     hint:`Links and transitions follow different rules.`,
+     explain:`Every <code>AB#</code> mention creates a link. A transition keyword applies only to the <code>AB#</code> reference that directly follows it. Write <code>Fixes AB#123, Fixes AB#124, Fixes AB#126</code> to move all three.`},
+    {id:"ab-title", kind:"mcq", title:"Where does AB# work?",
+     task:`A developer opens a GitHub pull request titled <code>AB#55 Add login page</code> with an empty description. Someone later comments <code>also AB#56</code>. Both work items are in the connected Azure Boards project. Which work items get a link to the PR?`,
+     options:[`55 only`, `56 only`, `Both 55 and 56`, `Neither`],
+     answer:3,
+     hint:`Check which text fields of a PR the integration reads.`,
+     explain:`The integration reads <code>AB#</code> in commit messages, PR descriptions and issue descriptions. Mentions in a PR <b>title</b> or a <b>comment</b> don't create links. Putting <code>AB#55 AB#56</code> in the description fixes it. Commits pushed with <code>AB#</code> in their messages would also link.`},
+    {id:"ab-branch", kind:"mcq", title:"Merged, but nothing moved",
+     task:`A pull request with <code>Fixes AB#77</code> in its description was merged into <code>release/2.0</code>. The repo's default branch is <code>main</code>. What happens to work item 77?`,
+     options:[
+       `It's linked and moved to its resolved state`,
+       `It's linked, but its state doesn't change`,
+       `It isn't linked, because only the default branch is scanned`,
+       `It's moved to Closed`],
+     answer:1,
+     hint:`The rule for state transitions is stricter than the rule for links.`,
+     explain:`Links are created whatever the target branch. State transitions only apply when the PR is merged into the <b>default branch</b>. The work item will transition once the change reaches <code>main</code> through a PR with the keyword.`},
+    {id:"ab-scrum", kind:"mcq", title:"Which state?",
+     task:`The project uses the <b>Scrum</b> process. A Product Backlog Item (states New, Approved, Committed, Done) is referenced as <code>Fixes AB#9</code> in a PR that's merged into the default branch. Which state does PBI 9 end up in?`,
+     options:[`Committed`, `Resolved`, `Done`, `It stays where it was`],
+     answer:2,
+     hint:`Fix keywords look for a Resolved-category state first, then fall back.`,
+     explain:`<code>fix</code>/<code>fixes</code>/<code>fixed</code> target the first state in the <b>Resolved</b> category. Scrum PBIs don't have one, so the work item goes to the first <b>Completed</b>-category state: <b>Done</b>. In the Agile process, a User Story would go to <i>Resolved</i> instead.`}
+  ]
+},
+/* ================================================================ 9 */
+{
+  group:"Integrate",
+  title:"Microsoft Teams",
+  tag:"Boards · Pipelines · Repos · GitHub apps",
+  intro:`Teams apps bring DevOps events into the channel where the team already talks. Each app links a channel to a project or repo, uses <b>subscriptions</b> to decide what gets posted, and adds actions such as creating work items or approving deployments.`,
+  sections:[
+    {h:"Which app does what", after:`<table class="ref">
+      <tr><th>App</th><th>Use it for</th><th>Good to know</th></tr>
+      <tr><td><b>Azure Boards</b></td><td>Work item notifications (filters: area path, work item type, tags), create work items from a message, search and share work items, URL previews</td><td>One Azure Boards project per channel. Use <code>unlink</code> before linking another.</td></tr>
+      <tr><td><b>Azure Pipelines</b></td><td>Notifications for builds, releases, YAML stages and pending approvals. <b>Approve or reject deployments from the channel.</b></td><td>Subscribe to a single pipeline or to all pipelines in a project</td></tr>
+      <tr><td><b>Azure Repos</b></td><td>Code pushed / checked in, PR created / updated, compose extension, PR URL previews</td><td>Git and TFVC repos in Azure Repos. GitHub repos aren't supported. <code>subscribe</code> creates a default <i>Pull request created</i> subscription.</td></tr>
+      <tr><td><b>GitHub</b></td><td>Issues, PRs, commits, comments, deployments, releases (on by default). Optional: reviews, workflows, branches, discussions, label filters.</td><td>In late 2026 the legacy app was replaced by a single <b>GitHub</b> app that combines notifications and Copilot. The subscribe commands are unchanged.</td></tr>
+      <tr><td><b>Azure DevOps</b> (tab)</td><td>Pin a dashboard or a Kanban board as a channel tab</td><td></td></tr>
+     </table>`},
+    {h:"Commands", lang:"text", code:`# Azure Boards
+@azure boards signin
+@azure boards link https://dev.azure.com/contoso/Fabrikam
+@azure boards addAreapath Fabrikam\\Mobile
+@azure boards subscriptions
+@azure boards unlink
+
+# Azure Pipelines
+@azure pipelines signin
+@azure pipelines subscribe https://dev.azure.com/contoso/Fabrikam/_build?definitionId=12
+@azure pipelines subscriptions
+@azure pipelines unsubscribe all https://dev.azure.com/contoso/Fabrikam
+
+# Azure Repos
+@azure repos signin
+@azure repos subscribe https://dev.azure.com/contoso/Fabrikam/_git/web
+@azure repos subscriptions
+@azure repos unsubscribe all https://dev.azure.com/contoso/Fabrikam
+
+# GitHub (in a channel; drop the @GitHub prefix in the personal app)
+@GitHub subscribe contoso/web
+@GitHub subscribe contoso/web reviews workflows
+@GitHub subscribe contoso/web commits:main
+@GitHub subscribe contoso/web +label:"priority:high"
+@GitHub subscribe contoso/web workflows:{name:"CI" event:"push" branch:"main"}
+@GitHub unsubscribe contoso/web deployments
+@GitHub subscribe list`},
+    {h:"Rules that show up in questions", p:`Notifications post to <b>channels</b>, not to group chats or direct messages. Creating Azure DevOps subscriptions requires <b>Project Administrators</b> (or Team Administrators for Boards and Repos). Team Administrators can't change subscriptions that Project Administrators created. Approvals from Teams work for classic release approvals and for YAML environment approvals and checks. You can't subscribe to approvals that use the <i>revalidate identity of approver</i> policy. <b>Office 365 (Microsoft 365) connectors</b> in Teams, including the old Incoming Webhook connector and the Azure DevOps service hook built on them, are retired. To post arbitrary messages from a script, use the <b>Workflows</b> app with the <i>When a Teams webhook request is received</i> trigger.`}
+  ],
+  tip:`"Approve production deployments from Teams" → the <b>Azure Pipelines</b> app. "Turn a chat message into a bug" → the <b>Azure Boards</b> app's message action. "Only PRs targeting main from repo X" → <code>@azure repos subscriptions</code> with filters. "Post a custom message from a script" → the <b>Workflows</b> webhook trigger.`,
+  exercises:[
+    {id:"teams-pipelines", kind:"code", lang:"text", title:"Wire a pipeline to a channel",
+     task:`Write the three Azure Pipelines app commands, one per line, that you type in a Teams channel to:
+       <ol class="tips"><li>sign in</li><li>subscribe the channel to the pipeline <code>https://dev.azure.com/contoso/Fabrikam/_build?definitionId=12</code></li><li>open the subscription list so you can add an approval-pending subscription</li></ol>`,
+     starter:``,
+     checks:[
+       {l:"@azure pipelines signin", t:x => /^@azure\s+pipelines\s+signin\s*$/im.test(x.src)},
+       {l:"@azure pipelines subscribe <that pipeline URL>", t:x => /^@azure\s+pipelines\s+subscribe\s+https:\/\/dev\.azure\.com\/contoso\/Fabrikam\/_build\?definitionId=12\s*$/im.test(x.src)},
+       {l:"@azure pipelines subscriptions", t:x => /^@azure\s+pipelines\s+subscriptions\s*$/im.test(x.src)},
+       {l:"Sign-in comes first", t:x => { const a = x.src.search(/@azure\s+pipelines\s+signin/i), b = x.src.search(/@azure\s+pipelines\s+subscribe\b/i); return a >= 0 && b > a; }}
+     ],
+     hint:`The pattern is <code>@azure pipelines &lt;command&gt;</code>: <code>signin</code>, <code>subscribe &lt;url&gt;</code>, <code>subscriptions</code>.`,
+     solution:`@azure pipelines signin
+@azure pipelines subscribe https://dev.azure.com/contoso/Fabrikam/_build?definitionId=12
+@azure pipelines subscriptions`,
+     explain:`<code>subscribe</code> with a pipeline URL covers that pipeline. With a project URL it covers every pipeline in the project. <code>subscriptions</code> lists the subscriptions and lets you add events such as approvals pending, with filters. Approvers can then approve or reject from the notification card in the channel.`},
+    {id:"teams-github", kind:"code", lang:"text", title:"Tune GitHub notifications in Teams",
+     task:`Write the GitHub app commands (one per line, with the <code>@GitHub</code> prefix) for a channel that should:
+       <ul class="tips"><li>subscribe to <code>contoso/api</code> (default features)</li><li>also receive <b>reviews</b></li><li>get commit notifications only for <code>main</code></li><li>get workflow run notifications only for the workflow named <code>CI</code> on branch <code>main</code></li><li><b>stop</b> deployment notifications</li></ul>`,
+     starter:``,
+     checks:[
+       {l:"@GitHub subscribe contoso/api", t:x => /^@github\s+subscribe\s+contoso\/api\b/im.test(x.src)},
+       {l:"reviews enabled", t:x => /^@github\s+subscribe\s+contoso\/api\b[^\n]*\breviews\b/im.test(x.src)},
+       {l:"commits:main", t:x => /^@github\s+subscribe\s+contoso\/api\b[^\n]*\bcommits:main\b/im.test(x.src)},
+       {l:"workflows:{name:\"CI\" … branch:\"main\"}", t:x => /^@github\s+subscribe\s+contoso\/api\b[^\n]*workflows:\{(?=[^}]*name:\s*"CI")(?=[^}]*branch:\s*"main")[^}]*\}/im.test(x.src)},
+       {l:"@GitHub unsubscribe contoso/api deployments", t:x => /^@github\s+unsubscribe\s+contoso\/api\b[^\n]*\bdeployments\b/im.test(x.src)}
+     ],
+     hint:`Features follow the repo: <code>@GitHub subscribe owner/repo reviews</code>. Filters: <code>commits:main</code>, <code>workflows:{name:"CI" branch:"main"}</code>. Use <code>unsubscribe</code> to remove a feature.`,
+     solution:`@GitHub subscribe contoso/api
+@GitHub subscribe contoso/api reviews
+@GitHub subscribe contoso/api commits:main
+@GitHub subscribe contoso/api workflows:{name:"CI" branch:"main"}
+@GitHub unsubscribe contoso/api deployments`,
+     alts:[`@GitHub subscribe contoso/api reviews commits:main workflows:{name:"CI" event:"push" branch:"main"}\n@GitHub unsubscribe contoso/api deployments`],
+     explain:`<code>subscribe owner/repo</code> turns on issues, pulls, commits, comments, deployments and releases. Add optional features (reviews, workflows, branches, discussions, <code>+label:"…"</code>) by naming them, and remove features with <code>unsubscribe</code>. <code>commits:*</code> would include every branch.`},
+    {id:"teams-approve", kind:"mcq", title:"Approve from the channel",
+     task:`Release managers live in the <i>Releases</i> Teams channel. They want to see when the YAML pipeline's <code>prod</code> stage is waiting for their approval, and approve it without opening Azure DevOps. What do you set up?`,
+     options:[
+       `The Azure Boards app with a subscription on the release area path`,
+       `The Azure Pipelines app: subscribe the channel to the pipeline and add an approvals-pending subscription`,
+       `A Workflows webhook that a pipeline script calls when the stage starts`,
+       `The GitHub app with the <code>deployments</code> feature`],
+     answer:1,
+     hint:`Only one of these knows about Azure Pipelines approvals and can act on them.`,
+     explain:`The Azure Pipelines app posts approval-pending cards with <b>Approve</b> and <b>Reject</b> buttons for classic releases and for YAML environment approvals. A Workflows webhook can post a message but can't complete an Azure Pipelines approval. The GitHub app covers GitHub deployments, not Azure Pipelines.`},
+    {id:"teams-unlink", kind:"mcq", title:"Switch the linked project",
+     task:`The <i>Mobile</i> channel was linked to the <code>Fabrikam</code> project with the Azure Boards app. The team has moved to the <code>Tailspin</code> project. What do you do?`,
+     options:[
+       `<code>@azure boards link https://dev.azure.com/contoso/Tailspin</code>. The channel then shows both projects.`,
+       `<code>@azure boards unlink</code>, then <code>@azure boards link https://dev.azure.com/contoso/Tailspin</code>`,
+       `<code>@azure boards addAreapath Tailspin</code>`,
+       `Install a second copy of the Azure Boards app in the same channel`],
+     answer:1,
+     hint:`How many projects can one channel be linked to?`,
+     explain:`A channel links to <b>one</b> Azure Boards project at a time, so unlink first. Unlinking deletes the channel's subscriptions and added area paths. If the channel has subscriptions, only a Project Administrator can unlink. <code>addAreapath</code> adds area paths from the already-linked project.`},
+    {id:"teams-workflows", kind:"mcq", title:"The old connector stopped posting",
+     task:`A deployment script used to post a summary to a channel through an <i>Incoming Webhook</i> Office 365 connector URL. It no longer works. What's the recommended replacement for posting custom messages from a script?`,
+     options:[
+       `Create a new Incoming Webhook connector in the channel`,
+       `A Workflows (Power Automate) flow with the <i>When a Teams webhook request is received</i> trigger`,
+       `The Azure Boards app's compose extension`,
+       `An Azure DevOps service hook with the Office 365 consumer`],
+     answer:1,
+     hint:`Microsoft names one app as the connector replacement.`,
+     explain:`Office 365 / Microsoft 365 connectors in Teams are retired, and you can't create new ones. The Workflows app provides a webhook trigger URL that accepts a POST (Adaptive Card payloads) and posts it to a chat or channel. For built-in Azure DevOps events, the Boards, Pipelines and Repos apps are the better fit.`},
+    {id:"teams-dm", kind:"mcq", title:"Notifications in a group chat?",
+     task:`A team installed the Azure Repos app into a <b>group chat</b> and ran <code>@azure repos subscribe</code> for their repo, but no PR notifications ever arrive. Why?`,
+     options:[
+       `Azure Repos notifications are only supported in team channels, not in chats or direct messages`,
+       `The repo must be a GitHub repo`,
+       `They must also install the Azure Pipelines app`,
+       `Only TFVC repos send notifications`],
+     answer:0,
+     hint:`Look at where the apps can deliver notifications.`,
+     explain:`The Azure Repos, Azure Boards and Azure Pipelines apps post subscription notifications in <b>channels</b> only. Add the app to a team, subscribe in one of its channels, and filter with <code>@azure repos subscriptions</code> (for example, only PRs that target <code>main</code>).`}
+  ]
+},
+/* ================================================================ 10 */
+{
+  group:"Review",
+  title:"Mixed scenarios",
+  tag:"Exam-style review",
+  intro:`Exam questions mix these topics into one scenario. Read for the <b>constraint</b> that decides the answer: <i>versioned</i>, <i>reviewed</i>, <i>automatic</i>, <i>must not be lost</i>, <i>from the channel</i>.`,
+  sections:[
+    {h:"Quick decision table", after:`<table class="ref">
+      <tr><th>If the scenario says…</th><th>Think…</th></tr>
+      <tr><td>docs versioned with releases, reviewed in PRs</td><td>Publish code as wiki (+ versions)</td></tr>
+      <tr><td>diagram stored as text and reviewed like code</td><td>Mermaid (<code>graph</code> in Azure DevOps wikis)</td></tr>
+      <tr><td>release notes from PRs on GitHub</td><td>Generated release notes + <code>.github/release.yml</code></td></tr>
+      <tr><td>changelog and version bump from commits</td><td>Conventional Commits + semantic-release / release-please, enforced by commitlint</td></tr>
+      <tr><td>API docs always match the build</td><td>Generate (XML docs/DocFX, OpenAPI) in the pipeline and publish</td></tr>
+      <tr><td>external system must react to events reliably</td><td>Service hook → Service Bus / Storage Queue; or webhook + HMAC check</td></tr>
+      <tr><td>an external event must start a pipeline</td><td>Incoming WebHook service connection + <code>resources.webhooks</code> (or <code>repository_dispatch</code> on GitHub)</td></tr>
+      <tr><td>GitHub commits/PRs must update Boards work items</td><td>Azure Boards app + <code>AB#</code> / <code>Fixes AB#</code></td></tr>
+      <tr><td>approve deployments or watch builds in Teams</td><td>Azure Pipelines app</td></tr>
+     </table>`}
+  ],
+  exercises:[
+    {id:"rev-boards", kind:"multi", title:"GitHub code, Azure Boards planning",
+     task:`Contoso hosts its code on GitHub and plans in Azure Boards. Every merged pull request should show up on its user story and move the story to its resolved state automatically. Which <b>two</b> actions do you take?`,
+     options:[
+       `Install the Azure Boards app for GitHub and connect the repository to the project`,
+       `Ask developers to put the work item ID as <code>AB#id</code> in the pull request title`,
+       `Ask developers to write <code>Fixes AB#id</code> in the pull request description`,
+       `Create a <i>Code pushed</i> service hook with the Web Hooks consumer`,
+       `Enable <b>Automatically link new work items in this build</b>`],
+     answer:[0,2],
+     hint:`One action connects the systems. The other is what developers type, and where they type it.`,
+     explain:`The Azure Boards app creates the connection. <code>Fixes AB#id</code> in the PR <b>description</b> links the work item and transitions it on merge into the default branch. An <code>AB#</code> in the title is ignored. A service hook only sends events, and the build setting adds <i>Integrated in build</i> links, not state changes.`},
+    {id:"rev-changelog", kind:"mcq", title:"Hands-free changelog",
+     task:`A library team wants <code>CHANGELOG.md</code>, the next semantic version and the Git tag produced automatically on every merge to <code>main</code>, with no hand-written notes. What do you recommend?`,
+     options:[
+       `Have the release manager run <code>git log --oneline</code> and edit the output before each release`,
+       `Adopt Conventional Commits, enforce them with commitlint, and run semantic-release (or release-please) in the pipeline`,
+       `Use the project wiki's page history as the changelog`,
+       `Create a Teams subscription for pushes to <code>main</code>`],
+     answer:1,
+     hint:`"Automatic" and "semantic version" both point at structured commit messages.`,
+     explain:`Structured messages let a tool compute the version bump (fix → patch, feat → minor, breaking → major), write the changelog and tag the release, with no manual steps. commitlint keeps the input clean. A plain <code>git log</code> still needs manual editing and can't work out the version.`},
+    {id:"rev-diagram", kind:"mcq", title:"One diagram, two platforms",
+     task:`An architecture diagram lives in a repo that's published both as an Azure DevOps code wiki and as a README on a GitHub mirror. It must render on both and be reviewable in pull requests. Which option works?`,
+     options:[
+       `A Visio export saved as PNG in <code>.attachments</code>`,
+       `Mermaid in a <code>::: mermaid</code> container starting with <code>flowchart LR</code>`,
+       `Mermaid in a <code>${FENCE}mermaid</code> fenced block starting with <code>graph LR</code>`,
+       `A draw.io diagram embedded in an <code>&lt;iframe&gt;</code>`],
+     answer:2,
+     hint:`GitHub only renders the fence. Azure DevOps has a keyword limitation.`,
+     explain:`GitHub renders Mermaid only from a <code>${FENCE}mermaid</code> block. The Azure DevOps wiki accepts both that and <code>::: mermaid</code>, but doesn't support the <code>flowchart</code> keyword. So use a fenced block with <code>graph</code>. A PNG can't be reviewed as a diff, and Azure DevOps Markdown doesn't allow general iframes.`},
+    {id:"rev-trigger", kind:"mcq", title:"External system starts a pipeline",
+     task:`When a partner publishes a new package to their feed, their system can send an HTTP POST with JSON. You want that POST to start an Azure Pipelines YAML pipeline, but only for the package <code>contoso.core</code>, and you want to verify the payload with a shared secret. What do you configure?`,
+     options:[
+       `A service hook in your project with the Web Hooks consumer`,
+       `An Incoming WebHook service connection with a secret, plus a <code>resources.webhooks</code> entry with a filter on the package name`,
+       `A scheduled trigger that polls the partner feed every 5 minutes`,
+       `The Azure Pipelines app for Teams`],
+     answer:1,
+     hint:`Service hooks send events <i>out</i> of Azure DevOps. You need the inbound direction.`,
+     explain:`Generic webhook triggers are configured with an <b>Incoming WebHook</b> service connection (the optional secret validates the payload checksum) and a <code>resources.webhooks</code> entry whose <code>filters</code> match JSON paths in the payload. Service hooks deliver Azure DevOps events to other systems, which is the opposite direction.`},
+    {id:"rev-readme", kind:"code", lang:"md", title:"Mini project: a release section for a GitHub README",
+     task:`Write a README section that uses most of this module set:
+       <ul class="tips"><li>a heading <code>## Release 2.4</code></li>
+       <li>a table with the columns <code>Area</code> and <code>Change</code> and at least two rows</li>
+       <li>a task list with at least two items, at least one of them checked</li>
+       <li>a Mermaid <code>graph LR</code> diagram in a fenced block, with at least two arrows</li>
+       <li>a line that links <b>and resolves</b> Azure Boards work item 2040 when this lands through a PR description</li></ul>`,
+     starter:``,
+     checks:[
+       {l:"## Release 2.4 heading", t:x => /^##\s+Release 2\.4\s*$/m.test(x.src)},
+       {l:"Table: Area | Change header + separator", t:x => /^\|?\s*Area\s*\|\s*Change\s*\|?[ \t]*\n\|?\s*:?-+:?\s*\|\s*:?-+:?\s*\|?[ \t]*$/m.test(x.src)},
+       {l:"Two or more table rows", t:x => { const m = x.src.match(/^\|?\s*Area\s*\|\s*Change\s*\|?[ \t]*\n[^\n]*\n((?:[^\n]*\|[^\n]*\n?)+)/m); return !!m && m[1].split("\n").filter(l => /\S/.test(l) && l.includes("|")).length >= 2; }},
+       {l:"Task list with 2+ items, one checked", t:x => (x.src.match(/^\s*[-*+] \[[ xX]\] \S/gm) || []).length >= 2 && /^\s*[-*+] \[[xX]\] \S/m.test(x.src)},
+       {l:"```mermaid block with graph LR and 2+ arrows", t:x => { const m = x.src.match(/^```\s*mermaid\s*\n([\s\S]*?)^```\s*$/m); return !!m && /^\s*graph\s+LR\b/m.test(m[1]) && (m[1].match(/-->|==>|-\.->/g) || []).length >= 2; }},
+       {l:"Fixes AB#2040 (fix keyword + AB#)", t:x => /\bfix(e[sd])?\s+AB#2040\b/i.test(x.src)}
+     ],
+     hint:`Combine the pieces from the earlier modules: table separator row, <code>- [x]</code>, a fenced <code>mermaid</code> block with <code>graph LR</code>, and <code>Fixes AB#2040</code>.`,
+     solution:`## Release 2.4
+
+| Area | Change |
+|------|--------|
+| Cart | Totals are rounded correctly |
+| Auth | Passkey sign-in |
+
+- [x] Release notes generated
+- [ ] Wiki version published
+
+${FENCE}mermaid
+graph LR
+    A[Merge to main] --> B[Build + tests]
+    B --> C[Release v2.4.0]
+${FENCE}
+
+Fixes AB#2040`,
+     explain:`This one README section uses most of the 1.3 objectives: Markdown structure, a reviewable Mermaid diagram, and Boards traceability through <code>Fixes AB#</code>. Pair it with generated release notes, a published code wiki version and a Teams subscription, and the release is fully documented and announced.`}
+  ]
+}
+];
+
+/* ===================================================================
+   MINI YAML PARSER (same one the Azure Pipelines lab uses)
+   Turns YAML into a flat list of { path, value } entries and reports
+   common mistakes: tabs, misaligned siblings, children under a scalar.
+   =================================================================== */
+const toStr = t => t.reduce((s, x) => x[0] === "[" ? s + x : (s ? s + "." + x : x), "");
+
+function cleanVal(v){
+  v = (v || "").trim();
+  if (v[0] === "'"){ const m = v.match(/^'((?:[^']|'')*)'/); if (m) return m[1].replace(/''/g, "'"); }
+  if (v[0] === '"'){ const m = v.match(/^"((?:[^"\\]|\\.)*)"/); if (m) return m[1]; }
+  const ci = v.search(/(^|\s)#/);
+  return (ci >= 0 ? v.slice(0, ci) : v).trim();
+}
+
+function splitFlow(inner){
+  const out = []; let cur = "", depth = 0, q = null;
+  for (const ch of inner){
+    if (q){ cur += ch; if (ch === q) q = null; continue; }
+    if (ch === "'" || ch === '"'){ q = ch; cur += ch; continue; }
+    if ("[{(".includes(ch)) depth++;
+    if ("]})".includes(ch)) depth--;
+    if (ch === "," && depth === 0){ out.push(cur); cur = ""; continue; }
+    cur += ch;
+  }
+  if (cur.trim()) out.push(cur);
+  return out.map(s => s.trim()).filter(Boolean);
+}
+
+function parseYaml(text){
+  const lines = text.replace(/\r/g, "").split("\n");
+  const entries = [], errors = [];
+  const root = {col:-1, gt:[], it:[], kids:null};
+  const stack = [root], counters = new Map();
+  const top = () => stack[stack.length - 1];
+  const add = (gt, it, value, line, block) =>
+    entries.push({gt, it, gen:toStr(gt), idx:toStr(it), value, line, block:!!block});
+  let flagged = -1;
+  const sibling = (parent, col, ln, kind) => {
+    if (parent.kind && parent.kind !== kind && flagged !== ln){
+      flagged = ln;
+      errors.push(`Line ${ln}: this ${kind === "list" ? "list item" : "key"} sits at the same level as ${kind === "list" ? "keys" : "\"- \" list items"} under the same parent. A block is either a list or a set of keys, not both. Check the indentation.`);
+    }
+    parent.kind = parent.kind || kind;
+    if (parent.kids === null) parent.kids = col;
+    else if (parent.kids !== col && flagged !== ln)
+      errors.push(`Line ${ln}: indented ${col} spaces, but its siblings use ${parent.kids}. Items at the same level must line up exactly.`);
+  };
+  let lastScalar = null;
+
+  for (let i = 0; i < lines.length; i++){
+    const raw = lines[i], ln = i + 1;
+    if (!raw.trim() || /^\s*#/.test(raw)) continue;
+    if (/^ *\t/.test(raw)){ errors.push(`Line ${ln}: a tab is used for indentation. YAML only allows spaces.`); continue; }
+    const lineCol = raw.match(/^ */)[0].length;
+    let col = lineCol, rest = raw.slice(col).replace(/\s+$/, "");
+    if (lastScalar && col > lastScalar.col && (flagged = ln))
+      errors.push(`Line ${ln}: indented under "${lastScalar.key}" (line ${lastScalar.ln}), but that key already has a value on its own line.`);
+    lastScalar = null;
+
+    let dashNode = null;
+    while (/^-(\s|$)/.test(rest)){
+      while (stack.length > 1 && (top().col > col || (top().dash && top().col === col))) stack.pop();
+      const parent = top();
+      sibling(parent, col, ln, "list");
+      const n = counters.get(parent) ?? 0; counters.set(parent, n + 1);
+      dashNode = {col, gt:[...parent.gt, "[]"], it:[...parent.it, `[${n}]`], kids:null, dash:true};
+      stack.push(dashNode);
+      const m = rest.match(/^-\s*/)[0].length;
+      col += m; rest = rest.slice(m);
+    }
+    if (!rest) continue;
+
+    let km;
+    if (/^['"]/.test(rest)){   // quoted key such as '200':
+      const qm = rest.match(/^((['"])(?:(?!\2).)*\2)\s*:(?:\s+(.*))?$/);
+      km = qm ? [qm[0], qm[1], qm[3]] : null;
+    } else km = rest.match(/^(.+?)\s*:(?:\s+(.*))?$/);
+    if (!km){
+      if (dashNode) add(dashNode.gt, dashNode.it, cleanVal(rest), ln);
+      else errors.push(`Line ${ln}: "${rest.slice(0, 40)}" is not a "key: value" pair or a "- item". Check for a missing colon or a missing space after it.`);
+      continue;
+    }
+
+    const key = cleanVal(km[1]) || km[1];
+    while (stack.length > 1 && top().col >= col) stack.pop();
+    const parent = top();
+    sibling(parent, col, ln, "map");
+    const gt = [...parent.gt, key], it = [...parent.it, key];
+    const rawVal = (km[2] || "").trim();
+
+    if (/^[|>][-+]?\d*\s*(#.*)?$/.test(rawVal)){
+      const body = []; let j = i + 1;
+      for (; j < lines.length; j++){
+        const l = lines[j];
+        if (!l.trim()){ body.push(""); continue; }
+        if (l.match(/^ */)[0].length > lineCol) body.push(l); else break;
+      }
+      while (body.length && !body[body.length - 1].trim()) body.pop();
+      const ind = body.filter(x => x.trim()).map(x => x.match(/^ */)[0].length);
+      const min = ind.length ? Math.min(...ind) : 0;
+      if (!body.length) errors.push(`Line ${ln}: "${key}: ${rawVal}" starts a multi-line block, but no indented lines follow.`);
+      add(gt, it, body.map(x => x.slice(min)).join("\n"), ln, true);
+      i = j - 1;
+      continue;
+    }
+
+    const quoted = /^['"]/.test(rawVal);
+    const v = cleanVal(rawVal);
+    if (v === "" && !quoted){
+      stack.push({col, gt, it, kids:null});
+      add(gt, it, "", ln);
+    } else if (!quoted && /^\[.*\]$/.test(v)){
+      add(gt, it, "", ln);
+      splitFlow(v.slice(1, -1)).forEach((x, k) => add([...gt, "[]"], [...it, `[${k}]`], cleanVal(x), ln));
+      lastScalar = {col, key, ln};
+    } else if (!quoted && /^\{.*\}$/.test(v)){
+      add(gt, it, "", ln);
+      splitFlow(v.slice(1, -1)).forEach(pair => {
+        const pm = pair.match(/^(.+?)\s*:\s*(.*)$/);
+        if (pm) add([...gt, cleanVal(pm[1])], [...it, cleanVal(pm[1])], cleanVal(pm[2]), ln);
+      });
+      lastScalar = {col, key, ln};
+    } else {
+      add(gt, it, v, ln);
+      lastScalar = {col, key, ln};
+    }
+  }
+  return {entries, errors};
+}
+
+function globRe(p){
+  if (p instanceof RegExp) return p;
+  return new RegExp("^" + p.split(/(\*\*|\*|\[\]\?)/).map(s =>
+    s === "**" ? ".*" :
+    s === "*" ? "[^.\\[\\]]*" :
+    s === "[]?" ? "(\\[\\])?" :
+    s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("") + "$", "i");
+}
+const valMatch = (v, w) => w === undefined ? true : w instanceof RegExp ? w.test(v) : String(v).toLowerCase() === String(w).toLowerCase();
+
+function makeApi(entries, src){
+  const find = (p, w) => { const re = globRe(p); return entries.filter(e => re.test(e.gen) && valMatch(e.value, w)); };
+  return {
+    src,
+    h: (p, w) => find(p, w).length > 0,
+    count: (p, w) => find(p, w).length,
+    first: (p, w) => Math.min(Infinity, ...find(p, w).map(e => e.line)),
+    item(listPath, conds){
+      const re = globRe(listPath + "[]"), groups = new Map();
+      for (const e of entries){
+        for (let n = 1; n <= e.gt.length; n++){
+          if (e.gt[n - 1] !== "[]" || !re.test(toStr(e.gt.slice(0, n)))) continue;
+          const k = toStr(e.it.slice(0, n));
+          if (!groups.has(k)) groups.set(k, []);
+          groups.get(k).push({rel:toStr(e.gt.slice(n)), value:e.value});
+        }
+      }
+      return [...groups.values()].some(list =>
+        Object.entries(conds).every(([rp, w]) => { const r = globRe(rp); return list.some(x => r.test(x.rel) && valMatch(x.value, w)); }));
+    }
+  };
+}
+
+/* ===================================================================
+   GRADING (pure functions, also used by the self-test)
+   =================================================================== */
+function stripFor(lang, s){
+  s = s.replace(/\r/g, "");
+  if (lang === "sh" || lang === "yaml") return s.replace(/^\s*#.*$/gm, "");
+  if (lang === "text") return s.replace(/^\s*#\s.*$/gm, "");
+  if (lang === "js") return s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+  if (lang === "xml") return s.replace(/<!--[\s\S]*?-->/g, "");
+  if (lang === "mermaid") return s.replace(/^\s*%%.*$/gm, "");
+  return s;
+}
+
+function gradeCode(ex, text){
+  const lang = ex.lang || "text";
+  const src = stripFor(lang, text);
+  const x = {src, raw:text, lines:src.split("\n").map(s => s.trim()).filter(Boolean)};
+  const res = [];
+  if (lang === "yaml"){
+    const p = parseYaml(text);
+    x.y = makeApi(p.entries, src);
+    res.push({l:"Valid YAML structure: spaces only, aligned siblings, key: value pairs", ok:p.errors.length === 0, sub:p.errors});
+  }
+  for (const c of ex.checks){
+    let ok = false;
+    try { ok = !!c.t(x); } catch (err) { ok = false; }
+    res.push({l:c.l, ok});
+  }
+  return res;
+}
+const normText = v => String(v || "").trim().replace(/\s+/g, " ");
+function gradeText(ex, value){ const v = normText(value); return v !== "" && ex.accept.some(r => r.test(v)); }
+function gradeChoice(ex, selected){
+  const want = [].concat(ex.answer).sort().join(","), got = [...selected].sort().join(",");
+  return want === got;
+}
+
+/* ===================================================================
+   HIGHLIGHTER (tiny, dependency-free)
+   =================================================================== */
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const hlExpr = s => s.replace(/(\$\(\s*[\w.]+\s*\)|\$\{\{[\s\S]*?\}\}|\$\[[\s\S]*?\])/g, '<span class="td">$1</span>');
+
+function commentAt(v){
+  let q = null;
+  for (let i = 0; i < v.length; i++){
+    const ch = v[i];
+    if (q){ if (ch === q) q = null; continue; }
+    if ((ch === "'" || ch === '"') && (i === 0 || /\s/.test(v[i - 1]))){ q = ch; continue; }
+    if (ch === "#" && (i === 0 || /\s/.test(v[i - 1]))) return i;
+  }
+  return -1;
+}
+function hlValue(v){
+  const ci = commentAt(v);
+  const body = ci >= 0 ? v.slice(0, ci) : v, comment = ci >= 0 ? v.slice(ci) : "";
+  const t = body.trim();
+  let out;
+  if (/^(['"]).*\1$/.test(t)) out = `<span class="ts">${hlExpr(esc(body))}</span>`;
+  else if (/^[|>][-+]?\d*$/.test(t)) out = `<span class="tk">${esc(body)}</span>`;
+  else if (/^(true|false|none|null|~|-?\d+(\.\d+)?)$/i.test(t)) out = `<span class="tn">${esc(body)}</span>`;
+  else if (/^[A-Za-z][\w.]*@\d+$/.test(t)) out = `<span class="tt">${esc(body)}</span>`;
+  else out = hlExpr(esc(body));
+  return out + (comment ? `<span class="tc">${esc(comment)}</span>` : "");
+}
+function hlYaml(code){
+  let blockCol = -1;
+  return code.split("\n").map(line => {
+    const ind = line.match(/^ */)[0].length;
+    if (blockCol >= 0){
+      if (!line.trim() || ind > blockCol) return hlExpr(esc(line));
+      blockCol = -1;
+    }
+    const [, sp, dash, rest] = line.match(/^(\s*)((?:-\s+|-$)*)(.*)$/);
+    if (rest.startsWith("#")) return esc(sp + dash) + `<span class="tc">${esc(rest)}</span>`;
+    let out = esc(sp) + (dash ? `<span class="tdash">${esc(dash)}</span>` : "");
+    const km = /^['"]/.test(rest) ? null : rest.match(/^(.+?)(\s*:)(\s+.*)?$/);
+    if (km){
+      out += `<span class="tk">${hlExpr(esc(km[1]))}</span>${esc(km[2])}`;
+      if (km[3]){
+        const lead = km[3].match(/^\s*/)[0], val = km[3].slice(lead.length);
+        out += lead + hlValue(val);
+        if (/^[|>][-+]?\d*\s*(#.*)?$/.test(val.trim())) blockCol = ind;
+      }
+    } else out += hlValue(rest);
+    return out;
+  }).join("\n");
+}
+function hlSh(code){
+  return code.split("\n").map(line => {
+    const m = line.match(/^(\s*)(#.*)$/);
+    if (m) return esc(m[1]) + `<span class="tc">${esc(m[2])}</span>`;
+    const ci = commentAt(line), body = ci >= 0 ? line.slice(0, ci) : line, comment = ci >= 0 ? line.slice(ci) : "";
+    return esc(body).replace(/^(\s*)(az|gh|git|docfx|dotnet|POST|GET)\b/, '$1<span class="tk">$2</span>')
+      .replace(/(\s)(--?[\w-]+)/g, '$1<span class="tt">$2</span>') + (comment ? `<span class="tc">${esc(comment)}</span>` : "");
+  }).join("\n");
+}
+const MERMAID_KW = /^(\s*)(:::\s*mermaid|:::|graph\b.*|flowchart\b.*|sequenceDiagram|gantt|subgraph\b.*|end|section\b.*|participant\b.*|actor\b.*|title\b.*|dateFormat\b.*|excludes\b.*|autonumber|activate\b.*|deactivate\b.*|Note\b.*|alt\b.*|else\b.*|loop\b.*|opt\b.*|par\b.*)$/;
+function hlOther(code, lang){
+  return code.split("\n").map(line => {
+    if (lang === "md" && /^\s*#{1,6}\s/.test(line)) return `<span class="tk">${esc(line)}</span>`;
+    if ((lang === "md" || lang === "mermaid") && MERMAID_KW.test(line)) return line.replace(MERMAID_KW, (m, sp, kw) => esc(sp) + `<span class="tk">${esc(kw)}</span>`);
+    if (lang === "mermaid" && /^\s*%%/.test(line)) return `<span class="tc">${esc(line)}</span>`;
+    if (lang === "js" && /^\s*\/\//.test(line)) return `<span class="tc">${esc(line)}</span>`;
+    if (lang === "text" && /^\s*#\s/.test(line)) return `<span class="tc">${esc(line)}</span>`;
+    if (lang === "xml") return esc(line).replace(/(&lt;\/?[\w.]+)/g, '<span class="tk">$1</span>');
+    return esc(line);
+  }).join("\n");
+}
+function highlight(code, lang){
+  if (lang === "yaml") return hlYaml(code);
+  if (lang === "sh") return hlSh(code);
+  return hlOther(code, lang || "text");
+}
+function codeBlock(code, lang){
+  return `<div class="codewrap"><pre><code>${highlight(code, lang)}</code></pre><button class="copy">Copy</button></div>`;
+}
+
+/* ===================================================================
+   UI
+   =================================================================== */
+function startApp(){
+  const store = {
+    get(k, d){ try { const v = localStorage.getItem("collabLab:" + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v){ try { localStorage.setItem("collabLab:" + k, JSON.stringify(v)); } catch {} }
+  };
+  const ALL = MODULES.flatMap(m => m.exercises.map(e => e.id));
+  let done = store.get("done", []).filter(id => ALL.includes(id));
+  let current = Math.min(store.get("current", 0), MODULES.length - 1);
+  const $ = s => document.querySelector(s);
+  const KIND = {mcq:"Multiple choice", multi:"Select all that apply", text:"Short answer", code:"Write it"};
+
+  const modDone = m => m.exercises.filter(e => done.includes(e.id)).length;
+
+  function renderNav(){
+    let html = "", lastGroup = "";
+    MODULES.forEach((m, i) => {
+      if (m.group !== lastGroup){ html += `<div class="group">${m.group}</div>`; lastGroup = m.group; }
+      const n = modDone(m), all = n === m.exercises.length;
+      const cls = [i === current ? "active" : "", all ? "done" : ""].join(" ");
+      html += `<button class="${cls}" data-i="${i}"><span class="num">${all ? "✓" : i + 1}</span>${m.title}<span class="cnt">${n}/${m.exercises.length}</span></button>`;
+    });
+    $("#nav").innerHTML = html;
+    $("#bar").style.width = (done.length / ALL.length * 100) + "%";
+    $("#progtext").textContent = `${done.length} of ${ALL.length} exercises solved`;
+  }
+
+  function markDone(ex, el){
+    if (!done.includes(ex.id)){ done.push(ex.id); store.set("done", done); }
+    el.classList.add("solved");
+    renderNav();
+  }
+
+  function exerciseHtml(ex, k, n){
+    let body = "";
+    if (ex.kind === "mcq" || ex.kind === "multi"){
+      const type = ex.kind === "mcq" ? "radio" : "checkbox";
+      body = `<div class="opts">${ex.options.map((o, i) =>
+        `<label class="opt" data-i="${i}"><input type="${type}" name="o-${ex.id}" value="${i}"><span>${o}</span></label>`).join("")}</div>`;
+    } else if (ex.kind === "text"){
+      body = `<input class="answer" type="text" spellcheck="false" autocomplete="off" placeholder="${esc(ex.placeholder || "")}" aria-label="Your answer">`;
+    } else {
+      body = `<textarea spellcheck="false" aria-label="Answer editor"></textarea>
+        <p class="edhelp">Tab inserts 2 spaces · Ctrl+Enter checks your answer · your text is saved in this browser</p>`;
+    }
+    let sol = "";
+    if (ex.kind === "code") sol = codeBlock(ex.solution, ex.lang);
+    else if (ex.kind === "text") sol = codeBlock(ex.solution, "text");
+    return `
+      <section class="exercise ${done.includes(ex.id) ? "solved" : ""}" id="ex-${ex.id}">
+        <h3>🧪 Exercise ${k + 1} of ${n}: ${ex.title} <span class="badge">Completed</span></h3>
+        <div class="kind">${KIND[ex.kind]}</div>
+        <div>${ex.task}</div>
+        ${body}
+        <div class="btns">
+          <button class="btn primary" data-act="check">Check my answer</button>
+          <button class="btn" data-act="hint">Hint</button>
+          <button class="btn" data-act="sol">Show solution</button>
+          ${ex.kind === "code" || ex.kind === "text" ? `<button class="btn" data-act="reset">Reset</button>` : ""}
+        </div>
+        <div class="hint">💡 ${ex.hint || "Re-read the explanation above the exercises."}</div>
+        <ul class="results"></ul>
+        <div class="why">✅ <b>Why:</b> ${ex.explain}</div>
+        <div class="solution">${sol}</div>
+      </section>`;
+  }
+
+  function wire(ex){
+    const el = document.getElementById("ex-" + ex.id);
+    const q = s => el.querySelector(s);
+    const results = q(".results"), why = q(".why");
+    const showWhy = () => { why.style.display = "block"; };
+    const key = "ans:" + ex.id;
+
+    let check;
+    if (ex.kind === "mcq" || ex.kind === "multi"){
+      const opts = [...el.querySelectorAll(".opt")];
+      opts.forEach(o => o.querySelector("input").addEventListener("change", () => opts.forEach(x => x.classList.remove("right", "wrong"))));
+      check = () => {
+        const sel = opts.filter(o => o.querySelector("input").checked).map(o => +o.dataset.i);
+        const want = [].concat(ex.answer);
+        if (!sel.length){ results.innerHTML = `<li class="fail">✘ Select ${ex.kind === "mcq" ? "an option" : "at least one option"} first.</li>`; return; }
+        const ok = gradeChoice(ex, sel);
+        opts.forEach(o => {
+          const i = +o.dataset.i, picked = sel.includes(i);
+          o.classList.toggle("right", picked && want.includes(i));
+          o.classList.toggle("wrong", picked && !want.includes(i));
+        });
+        if (ok){ results.innerHTML = `<li class="pass">✔ Correct. Nice work! 🎉</li>`; showWhy(); markDone(ex, el); }
+        else {
+          const missing = ex.kind === "multi" && sel.every(i => want.includes(i)) ? " You're on the right track, but something is missing." : "";
+          results.innerHTML = `<li class="fail">✘ Not quite.${missing} Try again or take a hint.</li>`;
+        }
+      };
+      q('[data-act="sol"]').onclick = e => {
+        const showing = e.target.dataset.on === "1";
+        e.target.dataset.on = showing ? "0" : "1";
+        e.target.textContent = showing ? "Show solution" : "Hide solution";
+        const want = [].concat(ex.answer);
+        opts.forEach(o => o.classList.toggle("right", !showing && want.includes(+o.dataset.i)));
+        if (!showing) showWhy(); else if (!el.classList.contains("solved")) why.style.display = "none";
+      };
+    } else {
+      const input = q(ex.kind === "text" ? "input.answer" : "textarea");
+      const starter = ex.kind === "code" ? ex.starter : "";
+      const saved = store.get(key, null);
+      input.value = saved !== null ? saved : starter;
+      const save = () => store.set(key, input.value);
+      input.addEventListener("input", save);
+      if (ex.kind === "text"){
+        check = () => {
+          if (gradeText(ex, input.value)){ results.innerHTML = `<li class="pass">✔ Correct. Nice work! 🎉</li>`; showWhy(); markDone(ex, el); }
+          else results.innerHTML = `<li class="fail">✘ Not accepted yet. Check the spelling and format, or take a hint.</li>`;
+        };
+        input.addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); check(); } });
+      } else {
+        check = () => {
+          const res = gradeCode(ex, input.value);
+          const passed = res.filter(r => r.ok).length, all = passed === res.length;
+          results.innerHTML = res.map(r =>
+            `<li class="${r.ok ? "pass" : "fail"}">${r.ok ? "✔" : "✘"} ${esc(r.l)}${(r.sub || []).map(s => `<span class="sub">↳ ${esc(s)}</span>`).join("")}</li>`).join("") +
+            `<li class="${all ? "pass" : "fail"}"><b>${passed}/${res.length} checks passed${all ? ". Nice work! 🎉" : ""}</b></li>`;
+          if (all){ showWhy(); markDone(ex, el); }
+        };
+        input.addEventListener("keydown", e => {
+          if (e.key === "Enter" && (e.ctrlKey || e.metaKey)){ e.preventDefault(); check(); return; }
+          if (e.key === "Tab" && !e.shiftKey){
+            e.preventDefault();
+            if (!document.execCommand || !document.execCommand("insertText", false, "  ")){
+              const s = input.selectionStart, en = input.selectionEnd;
+              input.value = input.value.slice(0, s) + "  " + input.value.slice(en);
+              input.selectionStart = input.selectionEnd = s + 2; save();
+            }
+          }
+        });
+      }
+      q('[data-act="reset"]').onclick = () => { input.value = starter; save(); results.innerHTML = ""; if (!el.classList.contains("solved")) why.style.display = "none"; };
+      q('[data-act="sol"]').onclick = e => {
+        const s = q(".solution"), show = s.style.display !== "block";
+        s.style.display = show ? "block" : "none";
+        e.target.textContent = show ? "Hide solution" : "Show solution";
+        if (show) showWhy(); else if (!el.classList.contains("solved")) why.style.display = "none";
+      };
+    }
+    q('[data-act="check"]').onclick = check;
+    q('[data-act="hint"]').onclick = () => { const h = q(".hint"); h.style.display = h.style.display === "block" ? "none" : "block"; };
+    if (el.classList.contains("solved")) showWhy();
+  }
+
+  function renderModule(){
+    const m = MODULES[current];
+    const sections = m.sections.map(s => `
+        <h3>${s.h}</h3>
+        ${s.p ? `<p>${s.p}</p>` : ""}
+        ${s.file ? `<div class="file">${s.file}</div>` : ""}
+        ${s.code ? codeBlock(s.code, s.lang) : ""}
+        ${s.after || ""}`).join("");
+    const n = m.exercises.length;
+    $("#content").innerHTML = `
+      <span class="tag">Module ${current + 1} of ${MODULES.length} · ${m.tag}</span>
+      <h2>${m.title}</h2>
+      <p class="lead">${m.intro}</p>
+      ${sections}
+      ${m.tip ? `<div class="note exam">🎯 <b>AZ-400 exam tip:</b> ${m.tip}</div>` : ""}
+      <div class="exhead">Exercises · ${n}</div>
+      ${m.exercises.map((ex, k) => exerciseHtml(ex, k, n)).join("")}
+      <div class="navfoot">
+        <button class="btn" id="prevBtn" ${current === 0 ? "disabled" : ""}>← Previous</button>
+        <button class="btn" id="nextBtn" ${current === MODULES.length - 1 ? "disabled" : ""}>Next →</button>
+      </div>`;
+    m.exercises.forEach(wire);
+    $("#prevBtn").onclick = () => go(current - 1);
+    $("#nextBtn").onclick = () => go(current + 1);
+    renderNav();
+    window.scrollTo(0, 0);
+  }
+
+  function go(i){
+    if (i < 0 || i >= MODULES.length) return;
+    current = i; store.set("current", i);
+    $("#side").classList.remove("open");
+    renderModule();
+  }
+
+  $("#nav").addEventListener("click", e => { const b = e.target.closest("button"); if (b) go(+b.dataset.i); });
+  $("#menuBtn").onclick = () => $("#side").classList.toggle("open");
+  document.addEventListener("click", e => {
+    if (!e.target.classList.contains("copy")) return;
+    const text = e.target.previousElementSibling.innerText;
+    navigator.clipboard?.writeText(text).then(() => { e.target.textContent = "Copied!"; setTimeout(() => e.target.textContent = "Copy", 1200); });
+  });
+  $("#themeBtn").onclick = () => {
+    const root = document.documentElement;
+    const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark"; store.set("theme", root.dataset.theme);
+  };
+  const t = store.get("theme", null); if (t) document.documentElement.dataset.theme = t;
+
+  renderModule();
+}
+
+if (typeof document !== "undefined" && document.getElementById("content")) startApp();
+</script>
+</body>
+</html>
